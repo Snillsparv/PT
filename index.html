@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Min PT – träning på kroppens villkor</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💪</text></svg>">
+</head>
+<body>
+  <header class="sidhuvud">
+    <h1>Min PT</h1>
+    <p>Träning på kroppens villkor – starta lägre, stegra långsammare.</p>
+  </header>
+
+  <nav class="flikar" aria-label="Huvudmeny"></nav>
+
+  <main>
+    <section class="vy" id="vy-idag" aria-label="Idag"></section>
+    <section class="vy" id="vy-logga" aria-label="Logga träning"></section>
+    <section class="vy" id="vy-program" aria-label="Program"></section>
+    <section class="vy" id="vy-ovningar" aria-label="Övningar"></section>
+    <section class="vy" id="vy-historik" aria-label="Historik"></section>
+    <section class="vy" id="vy-profil" aria-label="Profil"></section>
+  </main>
+
+  <input type="file" id="importFil" accept=".json,application/json" class="gomd"
+         onchange="if (this.files[0]) importeraData(this.files[0], function (d) { DATA = d; sparaData(DATA); bytFlik('historik'); alert('Importen lyckades!'); }); this.value = '';">
+
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/feedback.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

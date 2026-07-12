@@ -1,0 +1,443 @@
+/* =========================================================
+   style.css — Min PT
+   Mobil först. Ljust och mörkt läge via prefers-color-scheme.
+   Diagramfärger följer sidans validerade palett.
+   ========================================================= */
+
+:root {
+  --yta: #fcfcfb;
+  --plan: #f9f9f7;
+  --text: #0b0b0b;
+  --text-sekundar: #52514e;
+  --text-dampad: #898781;
+  --grid: #e1e0d9;
+  --baslinje: #c3c2b7;
+  --kant: rgba(11, 11, 11, 0.10);
+  --serie-1: #2a78d6;
+  --accent: #2a78d6;
+  --accent-yta: #e7f0fb;
+  --status-ok: #0ca30c;
+  --status-ok-text: #006300;
+  --status-varning-text: #8a5a00;
+  --status-varning-yta: #fdf3dd;
+  --status-stopp-text: #a32020;
+  --status-stopp-yta: #fbe9e9;
+  --status-ok-yta: #e8f6e8;
+  --status-info-yta: #eef1f5;
+  --skugga: 0 1px 3px rgba(11, 11, 11, 0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --yta: #1a1a19;
+    --plan: #0d0d0d;
+    --text: #ffffff;
+    --text-sekundar: #c3c2b7;
+    --text-dampad: #898781;
+    --grid: #2c2c2a;
+    --baslinje: #383835;
+    --kant: rgba(255, 255, 255, 0.10);
+    --serie-1: #3987e5;
+    --accent: #3987e5;
+    --accent-yta: #16283d;
+    --status-ok: #0ca30c;
+    --status-ok-text: #4cc44c;
+    --status-varning-text: #fab219;
+    --status-varning-yta: #2e2410;
+    --status-stopp-text: #ef8a8a;
+    --status-stopp-yta: #351515;
+    --status-ok-yta: #12290f;
+    --status-info-yta: #20232a;
+    --skugga: none;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--plan);
+  color: var(--text);
+  line-height: 1.55;
+  padding-bottom: 76px; /* plats för bottenmenyn på mobil */
+}
+
+/* ---------- Sidhuvud ---------- */
+header.sidhuvud {
+  background: var(--yta);
+  border-bottom: 1px solid var(--kant);
+  padding: 14px 16px 10px;
+}
+
+header.sidhuvud h1 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+header.sidhuvud p {
+  margin: 2px 0 0;
+  font-size: 0.85rem;
+  color: var(--text-sekundar);
+}
+
+/* ---------- Navigering ---------- */
+nav.flikar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  background: var(--yta);
+  border-top: 1px solid var(--kant);
+  z-index: 20;
+}
+
+nav.flikar button {
+  flex: 1;
+  padding: 9px 2px 10px;
+  background: none;
+  border: none;
+  font: inherit;
+  font-size: 0.68rem;
+  color: var(--text-sekundar);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+nav.flikar button .ikon { font-size: 1.15rem; line-height: 1; }
+
+nav.flikar button.aktiv {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+@media (min-width: 720px) {
+  body { padding-bottom: 20px; }
+  nav.flikar {
+    position: static;
+    border-top: none;
+    border-bottom: 1px solid var(--kant);
+    justify-content: center;
+    gap: 4px;
+  }
+  nav.flikar button {
+    flex: 0 0 auto;
+    flex-direction: row;
+    gap: 7px;
+    font-size: 0.9rem;
+    padding: 12px 16px;
+    border-bottom: 2px solid transparent;
+  }
+  nav.flikar button.aktiv { border-bottom-color: var(--accent); }
+}
+
+/* ---------- Layout ---------- */
+main {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+section.vy { display: none; }
+section.vy.aktiv { display: block; }
+
+.kort {
+  background: var(--yta);
+  border: 1px solid var(--kant);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: var(--skugga);
+}
+
+.kort h2 {
+  margin: 0 0 8px;
+  font-size: 1.05rem;
+}
+
+.kort h3 {
+  margin: 14px 0 6px;
+  font-size: 0.95rem;
+}
+
+.kort p { margin: 6px 0; }
+
+.dampad { color: var(--text-sekundar); font-size: 0.9rem; }
+.liten { font-size: 0.82rem; color: var(--text-dampad); }
+
+/* ---------- Meddelanden (feedback) ---------- */
+.medd {
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 8px 0;
+  font-size: 0.92rem;
+}
+
+.medd .varfor {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.8rem;
+  color: var(--text-sekundar);
+}
+
+.medd-ok      { background: var(--status-ok-yta); }
+.medd-info    { background: var(--status-info-yta); }
+.medd-varning { background: var(--status-varning-yta); }
+.medd-stopp   { background: var(--status-stopp-yta); }
+
+.medd-ok      .medd-etikett { color: var(--status-ok-text); font-weight: 600; }
+.medd-info    .medd-etikett { color: var(--text-sekundar); font-weight: 600; }
+.medd-varning .medd-etikett { color: var(--status-varning-text); font-weight: 600; }
+.medd-stopp   .medd-etikett { color: var(--status-stopp-text); font-weight: 600; }
+
+/* ---------- Knappar & formulär ---------- */
+button.primar, button.sekundar, button.fara {
+  font: inherit;
+  border-radius: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+button.primar {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+
+button.sekundar {
+  background: none;
+  border-color: var(--kant);
+  color: var(--text);
+}
+
+button.fara {
+  background: none;
+  border-color: var(--kant);
+  color: var(--status-stopp-text);
+}
+
+button.mini {
+  font: inherit;
+  font-size: 0.8rem;
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--kant);
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+}
+
+label { display: block; font-size: 0.85rem; color: var(--text-sekundar); margin: 10px 0 3px; }
+
+input[type="number"], input[type="date"], input[type="text"], select, textarea {
+  font: inherit;
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid var(--baslinje);
+  border-radius: 8px;
+  background: var(--yta);
+  color: var(--text);
+}
+
+textarea { resize: vertical; min-height: 56px; }
+
+input[type="range"] { width: 100%; accent-color: var(--accent); }
+
+.falt-rad {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  gap: 10px;
+}
+
+.knapprad { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+
+/* ---------- Smärtskala ---------- */
+.smarta-rad { display: flex; align-items: center; gap: 10px; }
+.smarta-varde {
+  min-width: 52px;
+  text-align: center;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 4px 6px;
+}
+.smarta-gron { background: var(--status-ok-yta); color: var(--status-ok-text); }
+.smarta-gul  { background: var(--status-varning-yta); color: var(--status-varning-text); }
+.smarta-rod  { background: var(--status-stopp-yta); color: var(--status-stopp-text); }
+
+/* ---------- Övningskort ---------- */
+.ovning-kort {
+  border: 1px solid var(--kant);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 10px 0;
+}
+
+.ovning-kort summary {
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ovning-kort summary::-webkit-details-marker { display: none; }
+
+.tagg {
+  font-size: 0.72rem;
+  font-weight: 500;
+  border: 1px solid var(--kant);
+  color: var(--text-sekundar);
+  border-radius: 20px;
+  padding: 1px 9px;
+  white-space: nowrap;
+}
+
+.tagg-niva { background: var(--accent-yta); color: var(--accent); border-color: transparent; }
+
+/* ---------- Dagens pass-lista ---------- */
+ul.passlista { list-style: none; margin: 8px 0; padding: 0; }
+ul.passlista li {
+  padding: 9px 0;
+  border-bottom: 1px solid var(--grid);
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+ul.passlista li:last-child { border-bottom: none; }
+ul.passlista .dos { color: var(--text-sekundar); font-size: 0.85rem; white-space: nowrap; }
+
+/* ---------- Loggade poster ---------- */
+.post-rad {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--grid);
+  flex-wrap: wrap;
+}
+.post-rad:last-child { border-bottom: none; }
+
+/* ---------- Historik ---------- */
+.pass-historik {
+  border: 1px solid var(--kant);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin: 10px 0;
+}
+
+.pass-historik header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ---------- Diagram ---------- */
+.diagram-behallare { position: relative; margin-top: 8px; }
+
+.diagram-grid { stroke: var(--grid); stroke-width: 1; }
+.diagram-baslinje { stroke: var(--baslinje); stroke-width: 1; }
+.diagram-tick { fill: var(--text-dampad); font-size: 10px; font-variant-numeric: tabular-nums; }
+.diagram-stapel { fill: var(--serie-1); }
+.diagram-linje { fill: none; stroke: var(--serie-1); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.diagram-punkt { fill: var(--serie-1); stroke: var(--yta); stroke-width: 2; }
+
+.diagram-tomt { color: var(--text-sekundar); font-size: 0.9rem; padding: 18px 0; }
+
+.diagram-tooltip {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  background: var(--text);
+  color: var(--plan);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 0.78rem;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 5;
+}
+
+.diagram-tooltip-rubrik { font-weight: 600; }
+
+table.diagram-tabell {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 8px;
+  font-size: 0.88rem;
+}
+
+table.diagram-tabell th, table.diagram-tabell td {
+  text-align: left;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--grid);
+}
+
+table.diagram-tabell td:last-child, table.diagram-tabell th:last-child {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Statistikrutor ---------- */
+.statrad {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.statruta {
+  border: 1px solid var(--kant);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.statruta .etikett { font-size: 0.78rem; color: var(--text-sekundar); }
+.statruta .varde { font-size: 1.35rem; font-weight: 600; }
+
+/* ---------- Fas-kort ---------- */
+.fas-kort { border-left: 3px solid var(--grid); padding-left: 12px; margin: 14px 0; }
+.fas-kort.aktiv-fas { border-left-color: var(--accent); }
+
+.gangsteg { display: flex; gap: 6px; flex-wrap: wrap; margin: 10px 0; }
+.gangsteg span {
+  width: 34px; height: 34px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  border: 1px solid var(--kant);
+  font-size: 0.85rem;
+  color: var(--text-sekundar);
+}
+.gangsteg span.klar { background: var(--accent-yta); color: var(--accent); border-color: transparent; }
+.gangsteg span.nu { background: var(--accent); color: #fff; border-color: transparent; font-weight: 700; }
+
+/* ---------- Morgonkoll ---------- */
+.kollrad {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+}
+.kollrad .region-namn { flex: 0 0 44%; font-size: 0.9rem; }
+
+/* ---------- Detaljer/expander ---------- */
+details.expander { margin: 8px 0; }
+details.expander summary { cursor: pointer; color: var(--accent); font-size: 0.9rem; }
+
+/* ---------- Utility ---------- */
+.gomd { display: none !important; }
+.centrerad { text-align: center; }
+hr.delare { border: none; border-top: 1px solid var(--grid); margin: 14px 0; }
