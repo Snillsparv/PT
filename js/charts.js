@@ -33,7 +33,8 @@ function formateraVarde(v) {
 /* Gemensam grund: yta, skalor, gridlines, tooltip-div */
 function diagramGrund(container, serie, opts) {
   container.innerHTML = "";
-  if (!serie.length) {
+  var harData = serie.some(function (p) { return p.varde !== null && p.varde !== undefined; });
+  if (!serie.length || !harData) {
     var tomt = document.createElement("p");
     tomt.className = "diagram-tomt";
     tomt.textContent = "Ingen data ännu – logga några pass så växer diagrammet fram här.";
@@ -46,17 +47,18 @@ function diagramGrund(container, serie, opts) {
   var marg = { topp: 12, hoger: 12, botten: 28, vanster: 34 };
 
   var maxV = 0;
-  serie.forEach(function (p) { if (p.varde > maxV) maxV = p.varde; });
+  serie.forEach(function (p) { if (p.varde !== null && p.varde > maxV) maxV = p.varde; });
   var steg = fintSteg(opts && opts.maxVarde ? opts.maxVarde : maxV);
   var toppV = (opts && opts.maxVarde) ? opts.maxVarde : Math.max(steg, Math.ceil(maxV / steg) * steg);
 
   var plotB = bredd - marg.vanster - marg.hoger;
   var plotH = hojd - marg.topp - marg.botten;
 
+  /* width 100 % + height auto ger likformig skalning – tooltip-läget kan
+     då räknas om med EN faktor även efter fönsterändring. */
   var svg = svgEl("svg", {
     viewBox: "0 0 " + bredd + " " + hojd,
-    width: "100%",
-    height: hojd,
+    style: "width:100%;height:auto;display:block",
     role: "img",
     "aria-label": (opts && opts.ariaEtikett) || "Diagram"
   });
@@ -98,7 +100,8 @@ function visaTooltip(grund, container, x, y, rubrik, vardeText) {
   grund.tooltip.appendChild(v);
   grund.tooltip.hidden = false;
 
-  var skala = container.clientWidth / grund.bredd;
+  /* Likformig skalning (height:auto) → samma faktor för x och y */
+  var skala = grund.svg.getBoundingClientRect().width / grund.bredd;
   var px = x * skala;
   var py = y * skala;
   grund.tooltip.style.left = Math.min(Math.max(px, 40), container.clientWidth - 60) + "px";
@@ -122,9 +125,10 @@ function ritaStapeldiagram(container, serie, opts) {
   serie.forEach(function (p, i) {
     var xMitt = grund.marg.vanster + band * i + band / 2;
     var x = xMitt - stapelB / 2;
-    var y = grund.yFor(p.varde);
+    var saknas = p.varde === null || p.varde === undefined;
+    var y = grund.yFor(saknas ? 0 : p.varde);
     var basY = grund.yFor(0);
-    var h = Math.max(basY - y, 0);
+    var h = saknas ? 0 : Math.max(basY - y, 0);
 
     if (h > 0) {
       var r = Math.min(4, h);
@@ -153,15 +157,17 @@ function ritaStapeldiagram(container, serie, opts) {
       x: grund.marg.vanster + band * i, y: grund.marg.topp,
       width: band, height: grund.plotH, fill: "transparent"
     });
-    traff.addEventListener("mouseenter", function () {
-      visaTooltip(grund, container, xMitt, y, p.etikett, formateraVarde(p.varde) + (opts.enhet ? " " + opts.enhet : ""));
-    });
-    traff.addEventListener("mouseleave", function () { gomTooltip(grund); });
+    if (!saknas) {
+      traff.addEventListener("mouseenter", function () {
+        visaTooltip(grund, container, xMitt, y, p.etikett, formateraVarde(p.varde) + (opts.enhet ? " " + opts.enhet : ""));
+      });
+      traff.addEventListener("mouseleave", function () { gomTooltip(grund); });
+    }
     grund.svg.appendChild(traff);
   });
 }
 
-/* ---------- Linjediagram (en serie) ---------- */
+/* ---------- Linjediagram (en serie; null = lucka i linjen) ---------- */
 function ritaLinjediagram(container, serie, opts) {
   opts = opts || {};
   var grund = diagramGrund(container, serie, opts);
@@ -174,19 +180,22 @@ function ritaLinjediagram(container, serie, opts) {
     return n > 1 ? grund.marg.vanster + stegX * i : grund.marg.vanster + grund.plotB / 2;
   }
 
-  /* Linjen */
+  /* Linjen – bryts vid null så att uppehåll syns som luckor */
   if (n > 1) {
-    var d = serie.map(function (p, i) {
-      return (i === 0 ? "M" : "L") + xFor(i) + "," + grund.yFor(p.varde);
-    }).join(" ");
-    grund.svg.appendChild(svgEl("path", { d: d, "class": "diagram-linje" }));
+    var d = "";
+    var forra = false;
+    serie.forEach(function (p, i) {
+      if (p.varde === null || p.varde === undefined) { forra = false; return; }
+      d += (forra ? " L" : " M") + xFor(i) + "," + grund.yFor(p.varde);
+      forra = true;
+    });
+    if (d) grund.svg.appendChild(svgEl("path", { d: d.trim(), "class": "diagram-linje" }));
   }
 
   /* Punkter med yt-ring + träffytor */
   serie.forEach(function (p, i) {
     var cx = xFor(i);
-    var cy = grund.yFor(p.varde);
-    grund.svg.appendChild(svgEl("circle", { cx: cx, cy: cy, r: 4, "class": "diagram-punkt" }));
+    var saknas = p.varde === null || p.varde === undefined;
 
     var visaEtikett = n <= 8 || i % Math.ceil(n / 8) === 0;
     if (visaEtikett) {
@@ -194,6 +203,11 @@ function ritaLinjediagram(container, serie, opts) {
       text.textContent = p.etikett;
       grund.svg.appendChild(text);
     }
+
+    if (saknas) return;
+
+    var cy = grund.yFor(p.varde);
+    grund.svg.appendChild(svgEl("circle", { cx: cx, cy: cy, r: 4, "class": "diagram-punkt" }));
 
     var halvband = n > 1 ? stegX / 2 : grund.plotB / 2;
     var traff = svgEl("rect", {
@@ -227,7 +241,9 @@ function ritaTabell(container, serie, opts) {
     var td1 = document.createElement("td");
     td1.textContent = p.etikett;
     var td2 = document.createElement("td");
-    td2.textContent = formateraVarde(p.varde) + (opts.enhet ? " " + opts.enhet : "");
+    td2.textContent = (p.varde === null || p.varde === undefined)
+      ? "–"
+      : formateraVarde(p.varde) + (opts.enhet ? " " + opts.enhet : "");
     rad.appendChild(td1);
     rad.appendChild(td2);
     tabell.appendChild(rad);

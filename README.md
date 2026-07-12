@@ -14,7 +14,7 @@ stegra långsammare**.
 - **Program** – tre faser (Grunden → Uppbyggnad → Kapacitet) med veckoscheman,
   plus ett gångprogram i 12 steg mot målet att kunna promenera som vanligt.
 - **Övningar** – bibliotek där varje övning förklarar *varför* den är vald
-  utifrån hälsoprofilen och vad man ska se upp med.
+  utifrån hälsoprofilen och vad du ska se upp med.
 - **Historik** – trender för belastning, smärta och gångminuter, plus
   export/import av all data och en knapp som kopierar en sammanfattning att
   klistra in i en Claude-chatt för personlig feedback.

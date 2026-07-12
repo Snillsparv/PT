@@ -28,6 +28,34 @@ function postensRegion(post) {
   return o ? o.region : null;
 }
 
+/* Svenskt talformat (decimalkomma) */
+function svTal(v) {
+  return String(v).replace(".", ",");
+}
+
+function nastaDag(datumStrIn) {
+  var d = parseDatum(datumStrIn);
+  d.setDate(d.getDate() + 1);
+  return datumStr(d);
+}
+
+/* Vilka morgonkoll-regioner en övning belastar */
+function kollRegionerFor(ovning) {
+  if (ovning.id === "gang") return ["underben", "fot", "kna"];
+  if (ovning.id === "cykel") return ["kna"];
+  return [ovning.region];
+}
+
+/* 24-timmarsregeln: var morgonen efter ett pass grön för övningens regioner?
+   Saknas morgonkoll för dagen efter antas den vara okej. */
+function morgonenEfterGron(datum, ovning, data) {
+  var koll = data.morgonkoll.find(function (k) { return k.datum === nastaDag(datum); });
+  if (!koll || !koll.regioner) return true;
+  return kollRegionerFor(ovning).every(function (r) {
+    return (Number(koll.regioner[r]) || 0) < 3;
+  });
+}
+
 /* ---------- Analys direkt efter ett loggat pass ---------- */
 function analyseraPass(pass, data) {
   var meddelanden = [];
@@ -96,8 +124,9 @@ function analyseraPass(pass, data) {
 }
 
 /* ---------- Progressionsförslag för en övning ----------
-   Redo att stegra när de två senaste loggningarna av övningen
-   var gröna (≤2) och dosen genomfördes.
+   Redo att stegra när de två senaste loggningarna av övningen var
+   gröna (≤2) BÅDE under passet och morgonen efter (24-timmarsregeln),
+   och dosen inte minskade mellan passen.
 --------------------------------------------------------- */
 function progressionsForslag(ovningId, data) {
   var o = getOvning(ovningId);
@@ -109,17 +138,28 @@ function progressionsForslag(ovningId, data) {
     .sort(function (a, b) { return a.datum < b.datum ? -1 : 1; })
     .forEach(function (p) {
       p.poster.forEach(function (post) {
-        if (post.ovningId === ovningId) loggar.push(post);
+        if (post.ovningId === ovningId) loggar.push({ post: post, datum: p.datum });
       });
     });
 
   if (loggar.length < 2) return { redo: false };
 
   var senaste = loggar.slice(-2);
-  var badaGrona = senaste.every(function (post) { return (Number(post.smarta) || 0) <= SMARTA_GRONT_MAX; });
+  var badaGrona = senaste.every(function (l) {
+    return (Number(l.post.smarta) || 0) <= SMARTA_GRONT_MAX && morgonenEfterGron(l.datum, o, data);
+  });
   if (!badaGrona) return { redo: false };
 
-  var sista = senaste[1];
+  /* Dosen får inte ha minskat mellan de två passen */
+  var dosHolls = ["set", "reps", "sek", "min", "vikt"].every(function (f) {
+    var forra = Number(senaste[0].post[f]);
+    var nu = Number(senaste[1].post[f]);
+    if (isNaN(forra) || isNaN(nu)) return true;
+    return nu >= forra;
+  });
+  if (!dosHolls) return { redo: false };
+
+  var sista = senaste[1].post;
 
   if (o.typ === "kondition") {
     if (o.id === "gang") {
@@ -129,11 +169,12 @@ function progressionsForslag(ovningId, data) {
         varfor: "Gångprogrammet stegras efter tre gröna pass på samma steg."
       };
     }
-    var nyaMin = Math.max((sista.min || o.dos.min) + Math.max(1, Math.round((sista.min || o.dos.min) * 0.1)), 1);
+    var minNu = sista.min || o.dos.min;
+    var nyaMin = minNu + Math.max(1, Math.round(minNu * 0.05));
     return {
       redo: true,
-      text: "Nästa gång kan du prova " + nyaMin + " min (ca 10 % mer).",
-      varfor: "Två gröna pass i rad → en variabel får öka, ca 10 % för konditionstid."
+      text: "Nästa gång kan du prova " + nyaMin + " min (ca 5 % mer).",
+      varfor: "Två gröna pass i rad → en variabel får öka, ca 5 % för konditionstid."
     };
   }
 
@@ -168,7 +209,7 @@ function progressionsForslag(ovningId, data) {
       if (nyVikt === vikt) nyVikt = vikt + 0.5;
       return {
         redo: true,
-        text: "Nästa gång kan du prova " + nyVikt + " kg (ca 5 % mer).",
+        text: "Nästa gång kan du prova " + svTal(nyVikt) + " kg (ca 5 % mer).",
         varfor: "Två gröna pass i rad → öka vikten med ~5 % (halva den vanliga tumregeln)."
       };
     }
@@ -285,16 +326,28 @@ function redoForNastaFas(data) {
   var snittSmarta = allaPoster.reduce(function (s, post) { return s + (Number(post.smarta) || 0); }, 0) / allaPoster.length;
   var nagonRod = allaPoster.some(function (post) { return (Number(post.smarta) || 0) > SMARTA_GULT_MAX; });
 
-  if (snittSmarta <= SMARTA_GRONT_MAX && !nagonRod) {
-    return {
-      niva: "ok",
-      text: "Du har " + senaste.length + " pass senaste 14 dagarna med snittsmärta " +
-        snittSmarta.toFixed(1) + "/10 och inga röda dagar. Du verkar redo för fas " + (fas + 1) +
-        " – byt under fliken Program när du känner dig redo.",
-      varfor: "Fasbytets krav: minst 3 pass/vecka i 2 veckor, snittsmärta ≤2 och inga röda pass."
-    };
+  if (snittSmarta > SMARTA_GRONT_MAX || nagonRod) return null;
+
+  /* Fas 2→3 har extra krav: gångprogrammet på minst steg 10 och
+     minst tre nivå 2-övningar gröna två pass i rad. */
+  if (fas === 2) {
+    if (data.installningar.gangsteg < 10) return null;
+    var antalGronaNiva2 = 0;
+    OVNINGAR.forEach(function (o) {
+      if (o.niva !== 2) return;
+      var f = progressionsForslag(o.id, data);
+      if (f && f.redo) antalGronaNiva2++;
+    });
+    if (antalGronaNiva2 < 3) return null;
   }
-  return null;
+
+  return {
+    niva: "ok",
+    text: "Du har " + senaste.length + " pass senaste 14 dagarna med snittsmärta " +
+      svTal(snittSmarta.toFixed(1)) + "/10 och inga röda dagar. Du verkar redo för fas " + (fas + 1) +
+      " – byt under fliken Program när du känner dig redo.",
+    varfor: "Fasbytets krav (se fliken Program) ser ut att vara uppfyllda."
+  };
 }
 
 /* ---------- Morgonkoll → justering av dagens pass ---------- */
@@ -327,13 +380,7 @@ function dagensPass(data) {
   dag.ovningar.forEach(function (id) {
     var o = getOvning(id);
     if (!o) return;
-    var region = o.region;
-    /* Gång belastar underben/fötter – koppla till de regionerna i morgonkollen */
-    var kollRegioner = [region];
-    if (id === "gang") kollRegioner = ["underben", "fot", "kna"];
-    if (o.typ === "kondition" && id === "cykel") kollRegioner = ["kna"];
-
-    var traffad = kollRegioner.find(function (r) { return ommaRegioner[r] !== undefined; });
+    var traffad = kollRegionerFor(o).find(function (r) { return ommaRegioner[r] !== undefined; });
     if (traffad && o.typ !== "rorlighet") {
       resultat.justeringar.push({
         niva: "varning",
@@ -350,28 +397,40 @@ function dagensPass(data) {
   return resultat;
 }
 
-/* ---------- Gångprogrammet: statusbedömning ---------- */
+/* ---------- Gångprogrammet: statusbedömning ----------
+   Varje gång-post stämplas med det steg den gjordes på (post.gangsteg,
+   sätts i sparaPass). Bara gångPASS (inte enskilda poster) gjorda på
+   NUVARANDE steg räknas – tre gröna sådana i rad krävs för nästa steg.
+   Poster utan stämpel (äldre data) räknas inte.
+------------------------------------------------------ */
 function gangStatus(data) {
   var steg = data.installningar.gangsteg;
   var stegInfo = GANGPROGRAM.find(function (s) { return s.steg === steg; }) || GANGPROGRAM[0];
 
-  var gangloggar = [];
+  /* Ett gångpass = ett loggat pass som innehåller minst en gång-post */
+  var gangpass = [];
   data.pass
     .slice()
     .sort(function (a, b) { return a.datum < b.datum ? -1 : 1; })
     .forEach(function (p) {
-      p.poster.forEach(function (post) {
-        if (post.ovningId === "gang") gangloggar.push({ datum: p.datum, smarta: Number(post.smarta) || 0 });
+      var gangposter = p.poster.filter(function (post) { return post.ovningId === "gang"; });
+      if (!gangposter.length) return;
+      gangpass.push({
+        datum: p.datum,
+        paSteg: gangposter.every(function (post) { return Number(post.gangsteg) === steg; }),
+        gron: gangposter.every(function (post) { return (Number(post.smarta) || 0) <= SMARTA_GRONT_MAX; })
       });
     });
 
-  var senasteTre = gangloggar.slice(-3);
-  var redo = senasteTre.length === 3 && senasteTre.every(function (g) { return g.smarta <= SMARTA_GRONT_MAX; });
+  var paDettaSteg = gangpass.filter(function (g) { return g.paSteg; });
+  var senasteTre = paDettaSteg.slice(-3);
+  var redo = senasteTre.length === 3 && senasteTre.every(function (g) { return g.gron; });
 
   return {
     steg: steg,
     info: stegInfo,
-    antalLoggade: gangloggar.length,
+    antalLoggade: gangpass.length,
+    antalPaSteg: paDettaSteg.length,
     senasteTre: senasteTre,
     redoForNasta: redo && steg < GANGPROGRAM.length
   };

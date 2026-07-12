@@ -109,7 +109,8 @@ const PRINCIPER = [
   {
     rubrik: "Ändra en sak i taget",
     text: "Öka aldrig vikt, repetitioner och frekvens samtidigt. En variabel per vecka, " +
-      "cirka 5 % i taget (halva den vanliga tumregeln – din kropp behöver längre tid på sig)."
+      "cirka 5 % i taget (halva den vanliga tumregeln – din kropp behöver längre tid på sig). " +
+      "Sidans progressionsförslag följer den här regeln åt dig."
   },
   {
     rubrik: "Två gröna pass innan stegring",
@@ -124,8 +125,8 @@ const PRINCIPER = [
   {
     rubrik: "Lugn vecka var fjärde vecka",
     text: "Var fjärde vecka halverar du volymen (samma övningar, hälften så många set). " +
-      "Senor och leder anpassar sig långsammare än muskler – de lugna veckorna är där " +
-      "anpassningen händer."
+      "Senor och leder anpassar sig långsammare än muskler – det är under de lugna " +
+      "veckorna som anpassningen sker."
   },
   {
     rubrik: "Bakslag är normala – planera för dem",
@@ -157,12 +158,14 @@ const OVNINGAR = [
   {
     id: "spansk-knaboj", namn: "Spansk knäböj (band)", region: "kna", typ: "iso", niva: 2,
     utrustning: "Kraftigt gummiband fäst i låg punkt",
-    beskrivning: "Bandet bakom knävecken, luta dig bakåt mot bandets drag och böj knäna till " +
-      "ca 70–90° med lodrät överkropp. Håll positionen.",
+    beskrivning: "Bandet bakom knävecken, luta dig bakåt mot bandets drag och böj knäna – " +
+      "börja grunt (ca 45–60°) och öka djupet gradvis över flera veckor. Lodrät överkropp. " +
+      "Håll positionen.",
     dos: { set: 3, sek: 30 },
-    darfor: "Belastar lårmuskeln hårt men avlastar knäskålsleden tack vare bandets drag – " +
-      "standardövning vid känsliga knän.",
-    seUpp: "Kräver ett rejält band. Börja med korta hålltider.",
+    darfor: "Belastar lårmuskeln hårt i ett stilla, kontrollerat läge – ett beprövat sätt " +
+      "att bygga knästyrka när knäna är känsliga för rörelse.",
+    seUpp: "Kräver ett rejält band. Börja grunt och med korta hålltider – smärta framtill i " +
+      "knät över 2/10 betyder mindre djup nästa håll.",
     next: "bensats-stol"
   },
   {
@@ -321,7 +324,7 @@ const OVNINGAR = [
       "läget.",
     dos: { set: 2, reps: 12 },
     darfor: "Böjda knän flyttar arbetet till soleus – den djupa vadmuskeln som gör " +
-      "merparten av jobbet vid just gång.",
+      "merparten av jobbet vid just gång. En nyckelövning för dina benhinnor.",
     seUpp: "Mindre rörelse än vanlig tåhävning är normalt.",
     next: null
   },
@@ -331,8 +334,9 @@ const OVNINGAR = [
     beskrivning: "Luta ryggen mot väggen med fötterna en bit ut. Lyft tårna/framfötterna mot " +
       "smalbenen så högt du kan, sänk långsamt.",
     dos: { set: 2, reps: 15 },
-    darfor: "Stärker muskeln på skenbenets framsida – precis det område dina " +
-      "benhinnebesvär sitter i. Starkare tibialis = tåligare för gång och stående.",
+    darfor: "Stärker muskeln på skenbenets framsida och balanserar vadarbetet – ett bra " +
+      "stöd runt benhinnorna. Kom ihåg att tåhävningarna (särskilt med böjda knän) är " +
+      "huvudövningarna för just benhinnebesvären.",
     seUpp: "Bränna i muskeln är okej, skarp smärta längs benhinnan är stopp.",
     next: null
   },
@@ -565,7 +569,7 @@ const OVNINGAR = [
 
   /* ---- Rörlighet ---- */
   {
-    id: "brostryggs-rotation", namn: "Bröstryggsrotation (sidliggande)", region: "bal", typ: "rorlighet", niva: 1,
+    id: "brostryggs-rotation", namn: "Bröstryggsrotation (sidoliggande)", region: "bal", typ: "rorlighet", niva: 1,
     utrustning: "Matta",
     beskrivning: "Ligg på sidan med böjda höfter, armarna raka framför dig. För översta " +
       "armen i en stor båge över till andra sidan och följ med blicken, tillbaka igen.",
@@ -593,8 +597,7 @@ const OVNINGAR = [
       "tills det stramar i vaden, håll 30 sekunder. Böj sedan lätt på bakre knät för djupa " +
       "vaden.",
     dos: { set: 1, reps: 2 },
-    darfor: "Mjukar upp vader och hälsenor före/efter gång – bra runtomkring ditt " +
-      "gångprogram.",
+    darfor: "Mjukar upp vader och hälsenor – bra före och efter dina gångpass.",
     seUpp: "Stretch ska strama, inte göra ont. Lätt handstöd mot väggen.",
     next: null
   },
@@ -645,20 +648,28 @@ const OVNINGAR = [
   }
 ];
 
-/* ---------- Gångprogrammet ---------- */
+/* ---------- Gångprogrammet ----------
+   Stegen är medvetet små: den sammanhängande gångtiden (det som
+   provocerar benhinnorna mest) ökar aldrig mer än ca 10–15 % per steg. */
 const GANGPROGRAM = [
   { steg: 1,  beskrivning: "3 × 4 min gång, minst 2 min sittpaus emellan", totalMin: 12 },
   { steg: 2,  beskrivning: "3 × 5 min gång, 2 min paus", totalMin: 15 },
   { steg: 3,  beskrivning: "3 × 6 min gång, 2 min paus", totalMin: 18 },
-  { steg: 4,  beskrivning: "2 × 10 min gång, 3 min paus", totalMin: 20 },
-  { steg: 5,  beskrivning: "2 × 12 min gång, 3 min paus", totalMin: 24 },
-  { steg: 6,  beskrivning: "15 min sammanhängande + 10 min efter paus", totalMin: 25 },
-  { steg: 7,  beskrivning: "20 min sammanhängande gång", totalMin: 20 },
-  { steg: 8,  beskrivning: "25 min sammanhängande gång", totalMin: 25 },
-  { steg: 9,  beskrivning: "30 min sammanhängande gång", totalMin: 30 },
-  { steg: 10, beskrivning: "35 min sammanhängande gång", totalMin: 35 },
-  { steg: 11, beskrivning: "40 min sammanhängande gång", totalMin: 40 },
-  { steg: 12, beskrivning: "45 min sammanhängande gång – vardagsnivå!", totalMin: 45 }
+  { steg: 4,  beskrivning: "3 × 7 min gång, 2 min paus", totalMin: 21 },
+  { steg: 5,  beskrivning: "2 × 8 min gång, 3 min paus", totalMin: 16 },
+  { steg: 6,  beskrivning: "2 × 9 min gång, 3 min paus", totalMin: 18 },
+  { steg: 7,  beskrivning: "2 × 10 min gång, 3 min paus", totalMin: 20 },
+  { steg: 8,  beskrivning: "2 × 12 min gång, 3 min paus", totalMin: 24 },
+  { steg: 9,  beskrivning: "14 min sammanhängande + 8 min efter paus", totalMin: 22 },
+  { steg: 10, beskrivning: "16 min sammanhängande + 8 min efter paus", totalMin: 24 },
+  { steg: 11, beskrivning: "18 min sammanhängande + 8 min efter paus", totalMin: 26 },
+  { steg: 12, beskrivning: "20 min sammanhängande gång", totalMin: 20 },
+  { steg: 13, beskrivning: "23 min sammanhängande gång", totalMin: 23 },
+  { steg: 14, beskrivning: "26 min sammanhängande gång", totalMin: 26 },
+  { steg: 15, beskrivning: "30 min sammanhängande gång", totalMin: 30 },
+  { steg: 16, beskrivning: "35 min sammanhängande gång", totalMin: 35 },
+  { steg: 17, beskrivning: "40 min sammanhängande gång", totalMin: 40 },
+  { steg: 18, beskrivning: "45 min sammanhängande gång – vardagsnivå!", totalMin: 45 }
 ];
 
 const GANGREGLER =
@@ -694,7 +705,7 @@ const FASER = [
     fokus: "Från isometriskt till långsam rörelse: spansk knäböj, excentriska tåhävningar, " +
       "lätta hantlar. Gångprogrammet fortsätter stegras i sin egen takt.",
     kravForNasta: "2 veckor i rad med genomsnittlig smärta 2 eller lägre, gångprogrammet på " +
-      "minst steg 6, och nivå 2-övningarna gröna två pass i rad.",
+      "minst steg 10, och minst tre av nivå 2-övningarna gröna två pass i rad.",
     vecka: [
       { dag: "Måndag",  rubrik: "Underkropp A", ovningar: ["spansk-knaboj", "bensats-stol", "hoftlyft-enben", "tahavning-iso", "cykel"] },
       { dag: "Tisdag",  rubrik: "Axlar & händer", ovningar: ["band-utrot", "skulderblads-rodd", "face-pull", "grepphall-iso", "fingerextension-band"] },

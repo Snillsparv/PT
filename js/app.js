@@ -10,7 +10,9 @@ var LAGE = {
   flik: "idag",
   loggPoster: [],      /* poster som håller på att loggas */
   loggRubrik: "",
-  senasteFeedback: []  /* feedback från senast sparade pass */
+  loggDatum: "",       /* valt datum i loggformuläret ("" = idag) */
+  morgonkollRedigerar: false,
+  senasteFeedback: []  /* feedback från senast sparade pass (denna session) */
 };
 
 /* ---------- DOM-hjälpare ---------- */
@@ -65,7 +67,10 @@ var FLIKAR = [
 function bytFlik(flikId) {
   LAGE.flik = flikId;
   document.querySelectorAll("nav.flikar button").forEach(function (b) {
-    b.classList.toggle("aktiv", b.dataset.flik === flikId);
+    var aktiv = b.dataset.flik === flikId;
+    b.classList.toggle("aktiv", aktiv);
+    if (aktiv) b.setAttribute("aria-current", "page");
+    else b.removeAttribute("aria-current");
   });
   document.querySelectorAll("section.vy").forEach(function (s) {
     s.classList.toggle("aktiv", s.id === "vy-" + flikId);
@@ -137,10 +142,20 @@ function renderaIdag() {
     vy.appendChild(lage);
   }
 
-  /* Senaste feedback (från nyss sparat pass) */
-  if (LAGE.senasteFeedback.length) {
-    var fb = el("div", { class: "kort" }, [el("h2", { text: "Feedback på senaste passet" })]);
-    LAGE.senasteFeedback.forEach(function (m) { fb.appendChild(meddElement(m)); });
+  /* Feedback på senaste passet – härleds ur datan så att den överlever
+     omladdning (visas så länge passet är högst en vecka gammalt). */
+  var fbMedd = LAGE.senasteFeedback;
+  var fbRubrik = "Feedback på senaste passet";
+  if (!fbMedd.length && DATA.pass.length) {
+    var senast = DATA.pass.slice().sort(function (a, b) { return a.datum > b.datum ? -1 : 1; })[0];
+    if (dagarMellan(senast.datum, idag) <= 7) {
+      fbMedd = analyseraPass(senast, DATA);
+      fbRubrik = "Feedback på senaste passet (" + finDatum(senast.datum) + ")";
+    }
+  }
+  if (fbMedd.length) {
+    var fb = el("div", { class: "kort" }, [el("h2", { text: fbRubrik })]);
+    fbMedd.forEach(function (m) { fb.appendChild(meddElement(m)); });
     vy.appendChild(fb);
   }
 
@@ -161,7 +176,7 @@ function morgonkollKort() {
   var koll = dagensMorgonkoll(DATA);
   var kort = el("div", { class: "kort" }, [el("h2", { text: "Morgonkoll" })]);
 
-  if (koll && !koll._redigerar) {
+  if (koll && !LAGE.morgonkollRedigerar) {
     var delar = [];
     Object.keys(koll.regioner || {}).forEach(function (r) {
       if (Number(koll.regioner[r]) > 0) delar.push(REGIONER[r].namn + " " + koll.regioner[r] + "/10");
@@ -172,13 +187,13 @@ function morgonkollKort() {
     kort.appendChild(el("div", { class: "knapprad" }, [
       el("button", {
         class: "mini", text: "Ändra",
-        onclick: function () { koll._redigerar = true; renderaIdag(); }
+        onclick: function () { LAGE.morgonkollRedigerar = true; renderaIdag(); }
       })
     ]));
     return kort;
   }
 
-  kort.appendChild(el("p", { class: "dampad", text: "Hur känns kroppen i dag? 0 = inget alls, 10 = värsta tänkbara." }));
+  kort.appendChild(el("p", { class: "dampad", text: "Hur känns kroppen idag? 0 = inget alls, 10 = värsta tänkbara." }));
 
   var varden = {};
   Object.keys(REGIONER).forEach(function (r) {
@@ -207,9 +222,14 @@ function morgonkollKort() {
       class: "primar", text: "Spara morgonkoll",
       onclick: function () {
         var idag = idagStr();
+        var tidigare = DATA.morgonkoll;
         DATA.morgonkoll = DATA.morgonkoll.filter(function (k) { return k.datum !== idag; });
         DATA.morgonkoll.push({ datum: idag, regioner: varden, kommentar: "" });
-        sparaData(DATA);
+        if (!sparaData(DATA)) {
+          DATA.morgonkoll = tidigare;
+          return;
+        }
+        LAGE.morgonkollRedigerar = false;
         renderaIdag();
       }
     })
@@ -224,6 +244,7 @@ function morgonkollKort() {
 function forbestamLogg(plan) {
   LAGE.loggPoster = plan.ovningar.map(function (o) { return nyPost(o.id); });
   LAGE.loggRubrik = plan.rubrik;
+  LAGE.loggDatum = idagStr();
   bytFlik("logga");
 }
 
@@ -251,12 +272,20 @@ function renderaLogga() {
 
   var kort = el("div", { class: "kort" }, [el("h2", { text: "Logga ett pass" })]);
 
-  /* Datum + rubrik */
-  var datumInput = el("input", { type: "date", value: idagStr(), max: idagStr() });
-  var rubrikInput = el("input", { type: "text", value: LAGE.loggRubrik, placeholder: "t.ex. Underkropp A" });
-  kort.appendChild(el("label", { text: "Datum" }));
+  /* Datum + rubrik – värdena speglas till LAGE så att de överlever
+     omrendering när övningar läggs till eller tas bort. */
+  if (!LAGE.loggDatum) LAGE.loggDatum = idagStr();
+  var datumInput = el("input", {
+    type: "date", id: "logg-datum", value: LAGE.loggDatum, max: idagStr(),
+    oninput: function (e) { LAGE.loggDatum = e.target.value; }
+  });
+  var rubrikInput = el("input", {
+    type: "text", id: "logg-rubrik", value: LAGE.loggRubrik, placeholder: "t.ex. Underkropp A",
+    oninput: function (e) { LAGE.loggRubrik = e.target.value; }
+  });
+  kort.appendChild(el("label", { text: "Datum", for: "logg-datum" }));
   kort.appendChild(datumInput);
-  kort.appendChild(el("label", { text: "Rubrik (valfritt)" }));
+  kort.appendChild(el("label", { text: "Rubrik (valfritt)", for: "logg-rubrik" }));
   kort.appendChild(rubrikInput);
 
   /* Lägg till övning */
@@ -294,7 +323,12 @@ function renderaLogga() {
       }),
       el("button", {
         class: "sekundar", text: "Rensa",
-        onclick: function () { LAGE.loggPoster = []; LAGE.loggRubrik = ""; renderaLogga(); }
+        onclick: function () {
+          LAGE.loggPoster = [];
+          LAGE.loggRubrik = "";
+          LAGE.loggDatum = "";
+          renderaLogga();
+        }
       })
     ]));
   } else {
@@ -327,9 +361,10 @@ function postFormular(post, index) {
   var falt = el("div", { class: "falt-rad" });
 
   function nummerFalt(egenskap, etikett, steg) {
-    var wrapper = el("div", null, [el("label", { text: etikett })]);
+    var faltId = "post-" + index + "-" + egenskap;
+    var wrapper = el("div", null, [el("label", { text: etikett, for: faltId })]);
     wrapper.appendChild(el("input", {
-      type: "number", min: "0", step: steg || "1", value: String(post[egenskap] || 0),
+      type: "number", id: faltId, min: "0", step: steg || "1", value: String(post[egenskap] || 0),
       inputmode: "decimal",
       oninput: function (e) { post[egenskap] = Number(e.target.value) || 0; }
     }));
@@ -366,6 +401,14 @@ function postFormular(post, index) {
 function sparaPass(datum, rubrik) {
   if (!datum) { alert("Välj ett datum."); return; }
 
+  /* Stämpla gång-poster med det steg de gjordes på – gångprogrammets
+     stegring räknar bara gröna pass på nuvarande steg. */
+  LAGE.loggPoster.forEach(function (post) {
+    if (post.ovningId === "gang" && post.gangsteg === undefined) {
+      post.gangsteg = DATA.installningar.gangsteg;
+    }
+  });
+
   var pass = {
     id: "p" + Date.now() + Math.floor(Math.random() * 1000),
     datum: datum,
@@ -376,9 +419,11 @@ function sparaPass(datum, rubrik) {
 
   DATA.pass.push(pass);
 
-  /* Gångprogrammet: uppgradera steget automatiskt efter tre gröna */
+  /* Gångprogrammet: uppgradera steget automatiskt efter tre gröna pass
+     på nuvarande steg */
   var gangPost = pass.poster.find(function (p) { return p.ovningId === "gang"; });
   var gangMedd = null;
+  var stegFore = DATA.installningar.gangsteg;
   if (gangPost) {
     var gs = gangStatus(DATA);
     if (gs.redoForNasta) {
@@ -386,18 +431,25 @@ function sparaPass(datum, rubrik) {
       var nytt = GANGPROGRAM[DATA.installningar.gangsteg - 1];
       gangMedd = {
         niva: "ok",
-        text: "Tre gröna gångpass i rad – gångprogrammet höjs till steg " + nytt.steg + ": " + nytt.beskrivning + " 🎉",
+        text: "Tre gröna gångpass i rad på steg " + stegFore + " – gångprogrammet höjs till steg " + nytt.steg + ": " + nytt.beskrivning + " 🎉",
         varfor: "Gångprogrammets regel: tre gröna pass på samma steg → nästa steg."
       };
     }
   }
 
+  if (!sparaData(DATA)) {
+    /* Sparningen misslyckades – backa allt så att inget går förlorat */
+    DATA.pass = DATA.pass.filter(function (p) { return p.id !== pass.id; });
+    DATA.installningar.gangsteg = stegFore;
+    return;
+  }
+
   LAGE.senasteFeedback = analyseraPass(pass, DATA);
   if (gangMedd) LAGE.senasteFeedback.push(gangMedd);
 
-  sparaData(DATA);
   LAGE.loggPoster = [];
   LAGE.loggRubrik = "";
+  LAGE.loggDatum = "";
   renderaLogga();
 }
 
@@ -417,14 +469,21 @@ function renderaProgram() {
     el("p", { class: "dampad", text: GANGREGLER })
   ]);
 
+  var stegBeskrivning = el("p", { class: "dampad", text: "" });
   var stegRad = el("div", { class: "gangsteg" });
   GANGPROGRAM.forEach(function (s) {
     var klass = "";
     if (s.steg < gs.steg) klass = "klar";
     if (s.steg === gs.steg) klass = "nu";
-    stegRad.appendChild(el("span", { class: klass, text: String(s.steg), title: s.beskrivning }));
+    stegRad.appendChild(el("button", {
+      class: klass, type: "button", text: String(s.steg),
+      "aria-label": "Steg " + s.steg + ": " + s.beskrivning,
+      onclick: function () { stegBeskrivning.textContent = "Steg " + s.steg + ": " + s.beskrivning; }
+    }));
   });
   gangKort.appendChild(stegRad);
+  gangKort.appendChild(el("p", { class: "liten", text: "Tryck på ett steg för att se vad det innebär." }));
+  gangKort.appendChild(stegBeskrivning);
   gangKort.appendChild(el("p", null, [
     el("strong", { text: "Nuvarande steg " + gs.steg + ": " }),
     gs.info.beskrivning
@@ -587,7 +646,7 @@ function renderaHistorik() {
   /* Diagram */
   vy.appendChild(diagramKort(
     "Belastning per vecka",
-    "Summa belastningspoäng (set för styrka, halva för isometriskt, minuter/10 för kondition). Jämn, långsamt stigande kurva är målet – inte toppar.",
+    "Varje styrkeset ger 1 poäng, varje isometriskt set ett halvt poäng och varje 10 minuter kondition 1 poäng. En jämn, långsamt stigande kurva är målet – inte toppar.",
     veckoBelastningsSerie(),
     "stapel",
     { enhet: "poäng", etikettRubrik: "Vecka", vardeRubrik: "Belastning" }
@@ -773,8 +832,9 @@ function veckoBelastningsSerie() {
 function veckoSmartaSerie() {
   if (!DATA.pass.length) return [];
   var veckor = senasteVeckor(8);
-  var serie = [];
-  veckor.forEach(function (v) {
+  /* Veckor utan pass blir null → lucka i linjen, så att tidsaxeln
+     stämmer och uppehåll inte ser ut som snabba förbättringar. */
+  return veckor.map(function (v) {
     var summa = 0, antal = 0;
     DATA.pass.forEach(function (p) {
       if (veckostart(p.datum) !== v) return;
@@ -783,9 +843,11 @@ function veckoSmartaSerie() {
         antal++;
       });
     });
-    if (antal > 0) serie.push({ etikett: veckoEtikett(v), varde: Math.round((summa / antal) * 10) / 10 });
+    return {
+      etikett: veckoEtikett(v),
+      varde: antal > 0 ? Math.round((summa / antal) * 10) / 10 : null
+    };
   });
-  return serie;
 }
 
 function veckoGangSerie() {
@@ -840,7 +902,7 @@ function init() {
   var nav = document.querySelector("nav.flikar");
   FLIKAR.forEach(function (f) {
     var knapp = el("button", { "data-flik": f.id }, [
-      el("span", { class: "ikon", text: f.ikon }),
+      el("span", { class: "ikon", text: f.ikon, "aria-hidden": "true" }),
       el("span", { text: f.namn })
     ]);
     knapp.dataset.flik = f.id;

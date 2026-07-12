@@ -9,12 +9,14 @@
   --plan: #f9f9f7;
   --text: #0b0b0b;
   --text-sekundar: #52514e;
-  --text-dampad: #898781;
+  --text-dampad: #6e6c66;
   --grid: #e1e0d9;
   --baslinje: #c3c2b7;
   --kant: rgba(11, 11, 11, 0.10);
   --serie-1: #2a78d6;
   --accent: #2a78d6;
+  --accent-text: #256abf; /* blå som klarar 4,5:1 som text på ljus yta */
+  --knapp: #256abf;       /* knappbakgrund med 4,5:1 mot vit text */
   --accent-yta: #e7f0fb;
   --status-ok: #0ca30c;
   --status-ok-text: #006300;
@@ -39,6 +41,8 @@
     --kant: rgba(255, 255, 255, 0.10);
     --serie-1: #3987e5;
     --accent: #3987e5;
+    --accent-text: #6ea6ec;
+    --knapp: #1c5cab;
     --accent-yta: #16283d;
     --status-ok: #0ca30c;
     --status-ok-text: #4cc44c;
@@ -115,7 +119,7 @@ nav.flikar button {
 nav.flikar button .ikon { font-size: 1.15rem; line-height: 1; }
 
 nav.flikar button.aktiv {
-  color: var(--accent);
+  color: var(--accent-text);
   font-weight: 600;
 }
 
@@ -208,7 +212,7 @@ button.primar, button.sekundar, button.fara {
 }
 
 button.primar {
-  background: var(--accent);
+  background: var(--knapp);
   color: #fff;
   font-weight: 600;
 }
@@ -228,7 +232,8 @@ button.fara {
 button.mini {
   font: inherit;
   font-size: 0.8rem;
-  padding: 4px 10px;
+  padding: 8px 14px;
+  min-height: 40px;
   border-radius: 8px;
   border: 1px solid var(--kant);
   background: none;
@@ -351,7 +356,7 @@ ul.passlista .dos { color: var(--text-sekundar); font-size: 0.85rem; white-space
 
 .diagram-grid { stroke: var(--grid); stroke-width: 1; }
 .diagram-baslinje { stroke: var(--baslinje); stroke-width: 1; }
-.diagram-tick { fill: var(--text-dampad); font-size: 10px; font-variant-numeric: tabular-nums; }
+.diagram-tick { fill: var(--text-sekundar); font-size: 10px; font-variant-numeric: tabular-nums; }
 .diagram-stapel { fill: var(--serie-1); }
 .diagram-linje { fill: none; stroke: var(--serie-1); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
 .diagram-punkt { fill: var(--serie-1); stroke: var(--yta); stroke-width: 2; }
@@ -413,16 +418,19 @@ table.diagram-tabell td:last-child, table.diagram-tabell th:last-child {
 .fas-kort.aktiv-fas { border-left-color: var(--accent); }
 
 .gangsteg { display: flex; gap: 6px; flex-wrap: wrap; margin: 10px 0; }
-.gangsteg span {
-  width: 34px; height: 34px;
+.gangsteg button {
+  width: 40px; height: 40px;
   display: inline-flex; align-items: center; justify-content: center;
   border-radius: 50%;
   border: 1px solid var(--kant);
+  background: none;
+  font: inherit;
   font-size: 0.85rem;
   color: var(--text-sekundar);
+  cursor: pointer;
 }
-.gangsteg span.klar { background: var(--accent-yta); color: var(--accent); border-color: transparent; }
-.gangsteg span.nu { background: var(--accent); color: #fff; border-color: transparent; font-weight: 700; }
+.gangsteg button.klar { background: var(--accent-yta); color: var(--accent-text); border-color: transparent; }
+.gangsteg button.nu { background: var(--knapp); color: #fff; border-color: transparent; font-weight: 700; }
 
 /* ---------- Morgonkoll ---------- */
 .kollrad {
@@ -435,7 +443,7 @@ table.diagram-tabell td:last-child, table.diagram-tabell th:last-child {
 
 /* ---------- Detaljer/expander ---------- */
 details.expander { margin: 8px 0; }
-details.expander summary { cursor: pointer; color: var(--accent); font-size: 0.9rem; }
+details.expander summary { cursor: pointer; color: var(--accent-text); font-size: 0.9rem; }
 
 /* ---------- Utility ---------- */
 .gomd { display: none !important; }

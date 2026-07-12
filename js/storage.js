@@ -21,16 +21,65 @@ function tomData() {
   };
 }
 
+/* Normaliserar data av okänd form (sparad eller importerad) till ett
+   säkert format – saknade/feltypade fält får standardvärden. */
+function normaliseraData(data) {
+  var ren = tomData();
+  if (!data || typeof data !== "object") return ren;
+
+  var inst = data.installningar && typeof data.installningar === "object" ? data.installningar : {};
+  if (typeof inst.startdatum === "string" && /^\d{4}-\d{2}-\d{2}$/.test(inst.startdatum)) {
+    ren.installningar.startdatum = inst.startdatum;
+  }
+  var fas = Number(inst.fas);
+  if (fas >= 1 && fas <= FASER.length) ren.installningar.fas = Math.round(fas);
+  var steg = Number(inst.gangsteg);
+  if (steg >= 1 && steg <= GANGPROGRAM.length) ren.installningar.gangsteg = Math.round(steg);
+
+  if (Array.isArray(data.morgonkoll)) {
+    ren.morgonkoll = data.morgonkoll.filter(function (k) {
+      return k && typeof k === "object" && typeof k.datum === "string" &&
+        k.regioner && typeof k.regioner === "object";
+    }).map(function (k) {
+      var regioner = {};
+      Object.keys(k.regioner).forEach(function (r) {
+        if (REGIONER[r]) regioner[r] = Math.max(0, Math.min(10, Number(k.regioner[r]) || 0));
+      });
+      return { datum: k.datum, regioner: regioner, kommentar: typeof k.kommentar === "string" ? k.kommentar : "" };
+    });
+  }
+
+  if (Array.isArray(data.pass)) {
+    ren.pass = data.pass.filter(function (p) {
+      return p && typeof p === "object" && typeof p.datum === "string" && Array.isArray(p.poster);
+    }).map(function (p, i) {
+      return {
+        id: typeof p.id === "string" ? p.id : "import" + i,
+        datum: p.datum,
+        rubrik: typeof p.rubrik === "string" ? p.rubrik : "",
+        kommentar: typeof p.kommentar === "string" ? p.kommentar : "",
+        poster: p.poster.filter(function (post) {
+          return post && typeof post === "object" && typeof post.ovningId === "string";
+        }).map(function (post) {
+          var renPost = { ovningId: post.ovningId, smarta: Math.max(0, Math.min(10, Number(post.smarta) || 0)) };
+          ["set", "reps", "vikt", "sek", "min", "gangsteg"].forEach(function (f) {
+            if (post[f] !== undefined) renPost[f] = Math.max(0, Number(post[f]) || 0);
+          });
+          if (typeof post.kommentar === "string") renPost.kommentar = post.kommentar;
+          return renPost;
+        })
+      };
+    });
+  }
+
+  return ren;
+}
+
 function laddaData() {
   try {
     var raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return tomData();
-    var data = JSON.parse(raw);
-    if (!data || data.version !== 1) return tomData();
-    if (!data.installningar) data.installningar = tomData().installningar;
-    if (!Array.isArray(data.morgonkoll)) data.morgonkoll = [];
-    if (!Array.isArray(data.pass)) data.pass = [];
-    return data;
+    return normaliseraData(JSON.parse(raw));
   } catch (e) {
     console.error("Kunde inte läsa sparad data:", e);
     return tomData();
@@ -111,7 +160,7 @@ function importeraData(fil, klar) {
         alert("Filen ser inte ut som en export från den här sidan.");
         return;
       }
-      klar(data);
+      klar(normaliseraData(data));
     } catch (e) {
       alert("Kunde inte läsa filen: " + e.message);
     }
