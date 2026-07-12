@@ -47,6 +47,25 @@ function meddElement(m) {
   ]);
 }
 
+/* ---------- Regionmärkning (ikon + färg, aldrig färg ensam) ---------- */
+function regionIkon(regionId) {
+  var r = REGIONER[regionId];
+  if (!r) return null;
+  return el("span", { class: "region-ikon", text: r.ikon, "aria-hidden": "true" });
+}
+
+function regionTagg(regionId) {
+  var r = REGIONER[regionId];
+  if (!r) return null;
+  return el("span", {
+    class: "tagg",
+    style: "color:" + r.farg + ";border-color:" + r.farg + "55"
+  }, [
+    el("span", { "aria-hidden": "true", text: r.ikon }),
+    r.namn
+  ]);
+}
+
 /* ---------- Smärtfärg ---------- */
 function smartaKlass(v) {
   if (v <= SMARTA_GRONT_MAX) return "smarta-gron";
@@ -113,7 +132,7 @@ function renderaIdag() {
         dosStr = "steg " + gs.steg + ": " + gs.info.beskrivning;
       }
       lista.appendChild(el("li", null, [
-        el("span", { text: o.namn }),
+        el("span", { class: "namn" }, [regionIkon(o.region), o.namn]),
         el("span", { class: "dos", text: dosStr })
       ]));
     });
@@ -211,7 +230,7 @@ function morgonkollKort() {
       }
     });
     kort.appendChild(el("div", { class: "kollrad" }, [
-      el("span", { class: "region-namn", text: REGIONER[r].namn }),
+      el("span", { class: "region-namn" }, [regionIkon(r), REGIONER[r].namn]),
       slider,
       vardeRuta
     ]));
@@ -294,7 +313,7 @@ function renderaLogga() {
   var grupper = ovningarPerRegion();
   Object.keys(REGIONER).forEach(function (r) {
     if (!grupper[r]) return;
-    var grupp = el("optgroup", { label: REGIONER[r].namn });
+    var grupp = el("optgroup", { label: REGIONER[r].ikon + " " + REGIONER[r].namn });
     grupper[r].forEach(function (o) {
       grupp.appendChild(el("option", { value: o.id, text: o.namn + " (nivå " + o.niva + ")" }));
     });
@@ -347,10 +366,14 @@ function renderaLogga() {
 
 function postFormular(post, index) {
   var o = getOvning(post.ovningId);
-  var ruta = el("div", { class: "ovning-kort" });
+  var region = REGIONER[o.region];
+  var ruta = el("div", {
+    class: "ovning-kort",
+    style: region ? "border-left-color:" + region.farg : ""
+  });
 
   var rubrikRad = el("div", { class: "post-rad" }, [
-    el("strong", { text: o.namn }),
+    el("strong", { class: "namn" }, [regionIkon(o.region), o.namn]),
     el("button", {
       class: "mini", text: "Ta bort",
       onclick: function () { LAGE.loggPoster.splice(index, 1); renderaLogga(); }
@@ -536,7 +559,7 @@ function renderaProgram() {
           var o = getOvning(id);
           if (!o) return;
           lista.appendChild(el("li", null, [
-            el("span", { text: o.namn }),
+            el("span", { class: "namn" }, [regionIkon(o.region), o.namn]),
             el("span", { class: "dos", text: dosText(o) })
           ]));
         });
@@ -575,47 +598,88 @@ function renderaProgram() {
    ========================================================= */
 var TYP_NAMN = { iso: "Isometrisk", styrka: "Styrka", rorlighet: "Rörlighet", kondition: "Kondition" };
 
+function ovningsKort(o) {
+  var region = REGIONER[o.region];
+  var detaljer = el("details", {
+    class: "ovning-kort",
+    style: region ? "border-left-color:" + region.farg : ""
+  }, [
+    el("summary", null, [
+      o.namn + " ",
+      regionTagg(o.region),
+      el("span", { class: "tagg", text: TYP_NAMN[o.typ] }),
+      el("span", { class: "tagg tagg-niva", text: "Nivå " + o.niva })
+    ]),
+    el("p", null, [el("strong", { text: "Så gör du: " }), o.beskrivning]),
+    el("p", null, [el("strong", { text: "Startdos: " }), dosText(o) + (o.utrustning ? " · Utrustning: " + o.utrustning : "")]),
+    el("p", null, [el("strong", { text: "Därför är den bra för dig: " }), o.darfor]),
+    el("p", null, [el("strong", { text: "Se upp med: " }), o.seUpp])
+  ]);
+  if (o.next) {
+    var nasta = getOvning(o.next);
+    detaljer.appendChild(el("p", { class: "liten", text: "Nästa steg i kedjan: " + nasta.namn }));
+  }
+  return detaljer;
+}
+
 function renderaOvningar() {
   var vy = document.getElementById("vy-ovningar");
   toms(vy);
 
   var kort = el("div", { class: "kort" }, [
     el("h2", { text: "Övningsbibliotek" }),
-    el("p", { class: "dampad", text: "Alla övningar är utvalda och doserade efter din historik. Nivå 1 hör till fas 1, och så vidare. Varje övning förklarar varför den är trygg just för dig." })
+    el("p", { class: "dampad", text: "Alla övningar är utvalda och doserade efter din historik, grupperade per kroppsområde med egen färg och symbol. Nivå 1 hör till fas 1, och så vidare. Varje övning förklarar varför den är trygg just för dig." })
   ]);
 
-  var filter = el("select", { "aria-label": "Filtrera på område" });
-  filter.appendChild(el("option", { value: "", text: "Alla områden" }));
+  var valdRegion = "";
+  var chips = [];
+
+  var chipRad = el("div", { class: "chip-rad", role: "group", "aria-label": "Filtrera på område" });
+
+  function gorChip(regionId, namn, ikon) {
+    var chip = el("button", {
+      class: "chip", type: "button", "aria-pressed": regionId === valdRegion ? "true" : "false",
+      onclick: function () {
+        valdRegion = regionId;
+        chips.forEach(function (c) { c.el.setAttribute("aria-pressed", c.id === valdRegion ? "true" : "false"); });
+        visaLista(valdRegion);
+      }
+    }, [
+      ikon ? el("span", { "aria-hidden": "true", text: ikon }) : null,
+      namn
+    ]);
+    chips.push({ id: regionId, el: chip });
+    return chip;
+  }
+
+  chipRad.appendChild(gorChip("", "Alla", "✨"));
   Object.keys(REGIONER).forEach(function (r) {
-    filter.appendChild(el("option", { value: r, text: REGIONER[r].namn }));
+    chipRad.appendChild(gorChip(r, REGIONER[r].namn, REGIONER[r].ikon));
   });
-  filter.addEventListener("change", function () { visaLista(filter.value); });
-  kort.appendChild(filter);
+  kort.appendChild(chipRad);
 
   var listContainer = el("div");
   kort.appendChild(listContainer);
 
+  var grupper = ovningarPerRegion();
+
   function visaLista(region) {
     toms(listContainer);
-    OVNINGAR.forEach(function (o) {
-      if (region && o.region !== region) return;
-      var detaljer = el("details", { class: "ovning-kort" }, [
-        el("summary", null, [
-          o.namn + " ",
-          el("span", { class: "tagg", text: REGIONER[o.region].namn }),
-          el("span", { class: "tagg", text: TYP_NAMN[o.typ] }),
-          el("span", { class: "tagg tagg-niva", text: "Nivå " + o.niva })
-        ]),
-        el("p", null, [el("strong", { text: "Så gör du: " }), o.beskrivning]),
-        el("p", null, [el("strong", { text: "Startdos: " }), dosText(o) + (o.utrustning ? " · Utrustning: " + o.utrustning : "")]),
-        el("p", null, [el("strong", { text: "Därför är den bra för dig: " }), o.darfor]),
-        el("p", null, [el("strong", { text: "Se upp med: " }), o.seUpp])
-      ]);
-      if (o.next) {
-        var nasta = getOvning(o.next);
-        detaljer.appendChild(el("p", { class: "liten", text: "Nästa steg i kedjan: " + nasta.namn }));
-      }
-      listContainer.appendChild(detaljer);
+    Object.keys(REGIONER).forEach(function (r) {
+      if (region && r !== region) return;
+      var ovningar = grupper[r];
+      if (!ovningar || !ovningar.length) return;
+
+      listContainer.appendChild(el("div", {
+        class: "region-rubrik",
+        style: "border-left-color:" + REGIONER[r].farg
+      }, [
+        el("span", { class: "region-ikon", text: REGIONER[r].ikon, "aria-hidden": "true" }),
+        el("h3", { text: REGIONER[r].namn }),
+        el("span", { class: "tagg", text: ovningar.length + (ovningar.length === 1 ? " övning" : " övningar") })
+      ]));
+
+      ovningar.forEach(function (o) { listContainer.appendChild(ovningsKort(o)); });
     });
   }
 
@@ -703,7 +767,7 @@ function renderaHistorik() {
         if (post.min) dos.push(post.min + " min");
         var smarta = Number(post.smarta) || 0;
         ruta.appendChild(el("div", { class: "post-rad" }, [
-          el("span", { text: namn }),
+          el("span", { class: "namn" }, [o ? regionIkon(o.region) : null, namn]),
           el("span", { class: "liten", text: dos.join(" · ") }),
           el("span", { class: "smarta-varde " + smartaKlass(smarta), text: smarta + "/10" })
         ]));
@@ -879,7 +943,7 @@ function renderaProfil() {
 
   var regionKort = el("div", { class: "kort" }, [el("h2", { text: "Område för område" })]);
   PROFIL.regioner.forEach(function (r) {
-    regionKort.appendChild(el("h3", { text: REGIONER[r.region].namn }));
+    regionKort.appendChild(el("h3", null, [regionIkon(r.region), " ", REGIONER[r.region].namn]));
     regionKort.appendChild(el("p", { class: "dampad", text: r.historik }));
     regionKort.appendChild(el("p", null, [el("strong", { text: "Strategi: " }), r.strategi]));
   });

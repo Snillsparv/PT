@@ -5,17 +5,20 @@
 
 "use strict";
 
-/* ---------- Kroppsregioner ---------- */
+/* ---------- Kroppsregioner ----------
+   Varje region har en egen ikon och neonfärg som används för att
+   gruppera övningar visuellt. Färgen är aldrig ensam bärare av
+   information – ikon och namn följer alltid med. */
 const REGIONER = {
-  kna:      { namn: "Knän",                 checkin: true },
-  underben: { namn: "Underben/skenben",     checkin: true },
-  fot:      { namn: "Fötter/hälar",         checkin: true },
-  hoft:     { namn: "Höft/säte",            checkin: false },
-  axel:     { namn: "Axlar",                checkin: true },
-  arm:      { namn: "Armbågar/underarmar",  checkin: true },
-  hand:     { namn: "Händer/fingrar",       checkin: true },
-  bal:      { namn: "Bål/rygg",             checkin: false },
-  kondition:{ namn: "Kondition",            checkin: false }
+  kna:      { namn: "Knän",                 checkin: true,  ikon: "🦵", farg: "#22d3ee" },
+  underben: { namn: "Underben/skenben",     checkin: true,  ikon: "🦿", farg: "#a78bfa" },
+  fot:      { namn: "Fötter/hälar",         checkin: true,  ikon: "🦶", farg: "#f472b6" },
+  hoft:     { namn: "Höft/säte",            checkin: false, ikon: "🍑", farg: "#fb923c" },
+  axel:     { namn: "Axlar",                checkin: true,  ikon: "🤷", farg: "#4ade80" },
+  arm:      { namn: "Armbågar/underarmar",  checkin: true,  ikon: "💪", farg: "#fbbf24" },
+  hand:     { namn: "Händer/fingrar",       checkin: true,  ikon: "✋", farg: "#f87171" },
+  bal:      { namn: "Bål/rygg",             checkin: false, ikon: "🧘", farg: "#60a5fa" },
+  kondition:{ namn: "Kondition",            checkin: false, ikon: "🚴", farg: "#e879f9" }
 };
 
 /* ---------- Träningsrelevant hälsoprofil ---------- */
