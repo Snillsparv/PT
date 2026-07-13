@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Superpappa-emblem">
+  <defs>
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#67e8f9"/><stop offset="0.5" stop-color="#a78bfa"/><stop offset="1" stop-color="#f472b6"/>
+    </linearGradient>
+    <linearGradient id="bolt" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffe08a"/><stop offset="1" stop-color="#fb923c"/>
+    </linearGradient>
+    <radialGradient id="inre" cx="0.5" cy="0.35" r="0.9">
+      <stop offset="0" stop-color="#1b2040"/><stop offset="1" stop-color="#0a0c1c"/>
+    </radialGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="2.6" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <circle cx="60" cy="60" r="52" fill="url(#inre)"/>
+  <circle cx="60" cy="60" r="52" fill="none" stroke="url(#ring)" stroke-width="5.5" filter="url(#glow)"/>
+  <circle cx="60" cy="60" r="44" fill="none" stroke="#67e8f9" stroke-width="1" opacity="0.35"/>
+  <!-- hjärta bakom blixten -->
+  <path d="M60 88 C40 74 34 60 42 51 C48 44 58 47 60 55 C62 47 72 44 78 51 C86 60 80 74 60 88Z"
+        fill="none" stroke="#f472b6" stroke-width="2.5" opacity="0.85" filter="url(#glow)"/>
+  <!-- blixt, cel-shading i två toner -->
+  <path d="M66 24 L44 62 L57 62 L50 96 L78 54 L63 54 Z" fill="url(#bolt)" filter="url(#glow)"/>
+  <path d="M66 24 L44 62 L57 62 L55 72 L70 46 L60 46 Z" fill="#fff3c4" opacity="0.55"/>
+  <polygon points="24.0,19.0 25.6,24.4 31.0,26.0 25.6,27.6 24.0,33.0 22.4,27.6 17.0,26.0 22.4,24.4" fill="#ffe08a" opacity="0.9"/><polygon points="98.0,87.0 99.1,90.9 103.0,92.0 99.1,93.1 98.0,97.0 96.9,93.1 93.0,92.0 96.9,90.9" fill="#67e8f9" opacity="0.9"/><polygon points="94.0,18.5 94.8,21.2 97.5,22.0 94.8,22.8 94.0,25.5 93.2,22.8 90.5,22.0 93.2,21.2" fill="#f472b6" opacity="0.8"/>
+</svg>

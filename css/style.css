@@ -94,6 +94,14 @@ header.sidhuvud p {
   color: var(--text-sekundar);
 }
 
+.h1-emblem {
+  height: 30px;
+  width: 30px;
+  vertical-align: -6px;
+  margin-right: 8px;
+  filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.5));
+}
+
 .lage-badge {
   display: inline-block;
   vertical-align: 3px;
@@ -602,6 +610,16 @@ details.expander summary { cursor: pointer; color: var(--accent-text); font-size
   border-color: rgba(251, 191, 36, 0.35);
 }
 
+.hero-bild {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(167, 139, 250, 0.35);
+  margin-bottom: 14px;
+  box-shadow: 0 0 24px -6px rgba(167, 139, 250, 0.45);
+}
+
 .hero-katakana {
   position: absolute;
   top: 12px;
@@ -624,7 +642,7 @@ details.expander summary { cursor: pointer; color: var(--accent-text); font-size
 }
 .hero-gnistra.g1 { top: 16px; left: 46%; font-size: 1.1rem; }
 .hero-gnistra.g2 { top: 58px; left: 68%; }
-.hero-gnistra.g3 { bottom: 30%; left: 12px; }
+.hero-gnistra.g3 { bottom: 10px; left: 10px; opacity: 0.8; }
 
 .hero-till {
   margin: 0 0 2px;
