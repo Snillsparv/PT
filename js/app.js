@@ -80,7 +80,7 @@ var FLIKAR = [
   { id: "program", namn: "Program", ikon: "🗓️" },
   { id: "ovningar", namn: "Övningar", ikon: "💪" },
   { id: "historik", namn: "Historik", ikon: "📈" },
-  { id: "superpappa", namn: "Superpappa", ikon: "🦸" },
+  { id: "superpappa", namn: "Superpappa", kort: "Hjälte", ikon: "🦸" },
   { id: "profil", namn: "Profil", ikon: "🩺" }
 ];
 
@@ -936,9 +936,9 @@ function veckoGangSerie() {
    ========================================================= */
 var KRAFT_STATUS = {
   upplast: { etikett: "⭐ UPPLÅST!", klass: "kraft-upplast" },
-  pagar:   { etikett: "⚡ PÅGÅR", klass: "kraft-pagar" },
-  last:    { etikett: "🔒 Låst", klass: "kraft-last" },
-  bonus:   { etikett: "✨ Bonus", klass: "kraft-bonus" }
+  pagar:   { etikett: "⚡ PÅGÅR!", klass: "kraft-pagar" },
+  last:    { etikett: "🔒 LÅST", klass: "kraft-last" },
+  bonus:   { etikett: "✨ BONUS", klass: "kraft-bonus" }
 };
 
 function kraftKravText(kraft) {
@@ -984,7 +984,7 @@ function renderaSuperpappa() {
         el("span", { class: "hero-niva-varde", text: status.niva + " %" })
       ]),
       powerMeter(status.niva, "Superpappa-nivå: " + status.niva + " procent"),
-      el("p", { class: "liten", text: "Gångprogram: steg " + status.gangsteg + " av " + GANGPROGRAM.length + " · Fas " + status.fas + " av 3" })
+      el("p", { class: "liten", text: "Gångprogram: steg " + status.gangsteg + " av " + GANGPROGRAM.length + " · fas " + status.fas + " av 3" })
     ])
   ]);
   SUPERPAPPA.intro.forEach(function (t) { hero.appendChild(el("p", { text: t })); });
@@ -993,7 +993,7 @@ function renderaSuperpappa() {
   /* Krafterna */
   var kraftKort = el("div", { class: "kort" }, [
     el("h2", { text: "Krafter som låses upp 💥" }),
-    el("p", { class: "dampad", text: "Varje kraft låses upp automatiskt när träningen når sin milstolpe – det här är alltså live-status, inte önskelista." })
+    el("p", { class: "dampad", text: "Kraftkorten följer träningen live – mätarna visar hur långt jag har kommit på vägen mot varje mål, och en kraft låses upp när träningen når milstolpen." })
   ]);
 
   status.krafter.forEach(function (k) {
@@ -1061,9 +1061,11 @@ function renderaProfil() {
 function init() {
   var nav = document.querySelector("nav.flikar");
   FLIKAR.forEach(function (f) {
-    var knapp = el("button", { "data-flik": f.id }, [
+    /* Flikar med kortnamn visar det på smala skärmar (CSS växlar) */
+    var knapp = el("button", { "data-flik": f.id, class: f.kort ? "har-kort" : "" }, [
       el("span", { class: "ikon", text: f.ikon, "aria-hidden": "true" }),
-      el("span", { text: f.namn })
+      el("span", { class: "flik-namn-lang", text: f.namn }),
+      f.kort ? el("span", { class: "flik-namn-kort", text: f.kort }) : null
     ]);
     knapp.dataset.flik = f.id;
     knapp.addEventListener("click", function () { bytFlik(f.id); });

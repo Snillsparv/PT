@@ -658,9 +658,9 @@ const OVNINGAR = [
 const SUPERPAPPA = {
   halsning: "Hej Jessica! 💌",
   intro: [
-    "Det här är sidan där du kan följa vad all min träning ska leda till. Programmet är " +
-    "byggt precis för min kropp: supersnälla doser som växer långsamt, så att jag blir " +
-    "starkare utan bakslag.",
+    "Det här är sidan där du kan följa vad all min träning siktar mot. Programmet är " +
+    "byggt precis för min kropp: supersnälla doser som växer långsamt, så att jag kan " +
+    "bli starkare med så få bakslag som möjligt.",
     "Planen har tre faser och ett gångprogram i 18 steg. Varje grönt pass tar mig ett " +
     "steg närmare listan här nedanför. Det går långsamt – men det är själva poängen. " +
     "Även superhjältar har en origin story."
@@ -677,18 +677,18 @@ const SUPERPAPPA = {
       kravTyp: "gangsteg", krav: 8
     },
     {
-      ikon: "🛒", namn: "Kassbärarkraften",
-      beskrivning: "Bära hem matkassarna – i båda händerna! – utan att fingrarna protesterar dagen efter.",
+      ikon: "🛒", namn: "Matkassekraften",
+      beskrivning: "Bära hem matkassarna – i båda händerna! – med fingrar som fått träna upp sig i lugn och ro.",
       kravTyp: "fas", krav: 2
     },
     {
       ikon: "🏙️", namn: "Stadsvandraren",
-      beskrivning: "En hel stadsrunda: affärer, fik och lite planlöst strosande, utan att spana efter sittplatser.",
+      beskrivning: "En hel stadsrunda: affärer, fik och lite planlöst strosande – med fika som enda planerade stopp.",
       kravTyp: "gangsteg", krav: 12
     },
     {
       ikon: "🥐", namn: "Bagarmästaren",
-      beskrivning: "Knåda en riktig bulldeg för hand igen. Kanelbullar på söndagar, någon?",
+      beskrivning: "Knåda en riktig bulldeg för hand igen. Vem säger nej till kanelbullar på söndag?",
       kravTyp: "fas", krav: 3
     },
     {

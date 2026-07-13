@@ -404,14 +404,32 @@ function superpappaStatus(data) {
   var gangsteg = data.installningar.gangsteg;
   var fas = data.installningar.fas;
 
+  /* Delframsteg INOM nuvarande fas: loggade pass senaste 14 dagarna mot
+     fasbytets 6-passkrav – så att mätarna rör sig av varje pass, inte
+     bara vid själva fasbytet. */
+  var fjortonDagarSedan = new Date();
+  fjortonDagarSedan.setDate(fjortonDagarSedan.getDate() - 14);
+  var grans = datumStr(fjortonDagarSedan);
+  var pass14 = data.pass.filter(function (p) { return p.datum >= grans; }).length;
+  var fasFraktion = fas >= 3 ? 0 : Math.min(0.95, pass14 / 6);
+
+  /* Delframsteg INOM nuvarande gångsteg: gröna gångpass på steget (0–3) */
+  var gs = gangStatus(data);
+  var gronaPaSteg = gs.senasteTre.filter(function (g) { return g.gron; }).length;
+  var stegFraktion = gangsteg >= GANGPROGRAM.length ? 0 : Math.min(0.95, gronaPaSteg / 3);
+
+  function klamp(p) { return Math.min(100, Math.max(0, Math.round(p))); }
+
   function procentFor(kraft) {
     if (kraft.kravTyp === "gangsteg") {
       if (kraft.krav <= 1) return 100;
-      return Math.min(100, Math.round(((gangsteg - 1) / (kraft.krav - 1)) * 100));
+      var stegNu = gangsteg >= kraft.krav ? gangsteg - 1 : gangsteg - 1 + stegFraktion;
+      return klamp((stegNu / (kraft.krav - 1)) * 100);
     }
     if (kraft.kravTyp === "fas") {
       if (kraft.krav <= 1) return 100;
-      return Math.min(100, Math.round(((fas - 1) / (kraft.krav - 1)) * 100));
+      var fasNu = fas >= kraft.krav ? fas - 1 : fas - 1 + fasFraktion;
+      return klamp((fasNu / (kraft.krav - 1)) * 100);
     }
     return 0;
   }
@@ -439,7 +457,10 @@ function superpappaStatus(data) {
     return { kraft: k, status: status, procent: procentFor(k) };
   });
 
-  var niva = Math.round((((gangsteg - 1) / (GANGPROGRAM.length - 1)) * 0.6 + ((fas - 1) / 2) * 0.4) * 100);
+  var niva = Math.min(100, Math.max(0, Math.round(
+    (((gangsteg - 1 + stegFraktion) / (GANGPROGRAM.length - 1)) * 0.6 +
+     ((fas - 1 + fasFraktion) / 2) * 0.4) * 100
+  )));
 
   return { niva: niva, krafter: krafter, gangsteg: gangsteg, fas: fas };
 }

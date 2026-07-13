@@ -107,7 +107,7 @@ header.sidhuvud p {
   vertical-align: 3px;
   margin-left: 10px;
   padding: 2px 10px;
-  font-size: 0.58rem;
+  font-size: 0.62rem;
   font-weight: 800;
   font-style: italic;
   letter-spacing: 0.12em;
@@ -158,10 +158,14 @@ nav.flikar button.aktiv {
   text-shadow: 0 0 12px rgba(34, 211, 238, 0.55);
 }
 
-/* 7 flikar ska rymmas på smala mobiler */
+/* 7 flikar ska rymmas på smala mobiler: kortnamn + något större text */
+.flik-namn-kort { display: none; }
+
 @media (max-width: 460px) {
-  nav.flikar button { font-size: 0.6rem; padding: 8px 1px 9px; }
+  nav.flikar button { font-size: 0.66rem; padding: 8px 1px 9px; }
   nav.flikar button .ikon { font-size: 1.05rem; }
+  nav.flikar button.har-kort .flik-namn-lang { display: none; }
+  nav.flikar button.har-kort .flik-namn-kort { display: inline; }
 }
 
 @media (min-width: 720px) {
@@ -776,8 +780,12 @@ details.expander summary { cursor: pointer; color: var(--accent-text); font-size
 .kraft-pagar { border-color: rgba(103, 232, 249, 0.45); }
 .kraft-pagar .kraft-status { color: var(--accent-text); border-color: rgba(103, 232, 249, 0.5); }
 
-.kraft-last { opacity: 0.72; }
-.kraft-last .kraft-status { color: var(--text-dampad); }
+/* Låsta kort dimmas via färgval som fortfarande klarar AA-kontrast –
+   inte via opacity på hela kortet (det sänkte småtexten under 4,5:1) */
+.kraft-last { border-color: rgba(140, 160, 255, 0.09); background: rgba(255, 255, 255, 0.012); }
+.kraft-last .kraft-ikon { opacity: 0.55; }
+.kraft-last .kraft-namn { color: var(--text-sekundar); }
+.kraft-last .kraft-status { color: var(--text-sekundar); }
 
 .kraft-bonus { border-style: dashed; }
 .kraft-bonus .kraft-status { color: #f0abfc; border-color: rgba(232, 121, 249, 0.45); }
