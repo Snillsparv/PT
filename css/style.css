@@ -94,6 +94,26 @@ header.sidhuvud p {
   color: var(--text-sekundar);
 }
 
+.lage-badge {
+  display: inline-block;
+  vertical-align: 3px;
+  margin-left: 10px;
+  padding: 2px 10px;
+  font-size: 0.58rem;
+  font-weight: 800;
+  font-style: italic;
+  letter-spacing: 0.12em;
+  color: #ffe08a;
+  background: rgba(251, 191, 36, 0.10);
+  border: 1px solid rgba(251, 191, 36, 0.45);
+  border-radius: 999px;
+  transform: skew(-8deg);
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.6);
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  -webkit-text-fill-color: #ffe08a;
+}
+
 /* ---------- Navigering ---------- */
 nav.flikar {
   position: fixed;
@@ -128,6 +148,12 @@ nav.flikar button.aktiv {
   color: var(--accent-text);
   font-weight: 600;
   text-shadow: 0 0 12px rgba(34, 211, 238, 0.55);
+}
+
+/* 7 flikar ska rymmas på smala mobiler */
+@media (max-width: 460px) {
+  nav.flikar button { font-size: 0.6rem; padding: 8px 1px 9px; }
+  nav.flikar button .ikon { font-size: 1.05rem; }
 }
 
 @media (min-width: 720px) {
@@ -558,6 +584,185 @@ table.diagram-tabell td:last-child, table.diagram-tabell th:last-child {
 /* ---------- Detaljer/expander ---------- */
 details.expander { margin: 8px 0; }
 details.expander summary { cursor: pointer; color: var(--accent-text); font-size: 0.9rem; }
+
+/* ---------- Superpappa (anime/hjälte-stil) ---------- */
+.hero-superpappa {
+  position: relative;
+  overflow: hidden;
+  text-align: left;
+  background:
+    /* manga-fartränder från nedre mitten */
+    repeating-conic-gradient(from -90deg at 50% 130%,
+      rgba(255, 255, 255, 0.045) 0deg 3deg, transparent 3deg 11deg),
+    /* skärmton-prickar i hörnet */
+    radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1.5px),
+    linear-gradient(160deg, rgba(167, 139, 250, 0.14), rgba(34, 211, 238, 0.06) 45%, transparent 70%),
+    var(--yta);
+  background-size: auto, 9px 9px, auto, auto;
+  border-color: rgba(251, 191, 36, 0.35);
+}
+
+.hero-katakana {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  writing-mode: vertical-rl;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.35em;
+  color: rgba(244, 114, 182, 0.35);
+  text-shadow: 0 0 12px rgba(244, 114, 182, 0.35);
+  pointer-events: none;
+}
+
+.hero-gnistra {
+  position: absolute;
+  color: #ffe08a;
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.8);
+  pointer-events: none;
+  font-size: 0.9rem;
+}
+.hero-gnistra.g1 { top: 16px; left: 46%; font-size: 1.1rem; }
+.hero-gnistra.g2 { top: 58px; left: 68%; }
+.hero-gnistra.g3 { bottom: 30%; left: 12px; }
+
+.hero-till {
+  margin: 0 0 2px;
+  font-size: 0.95rem;
+  color: var(--text-sekundar);
+}
+
+.hero-titel {
+  margin: 0;
+  font-size: clamp(2rem, 9vw, 3rem);
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 0.05em;
+  line-height: 1.1;
+  transform: skew(-6deg);
+  width: fit-content;
+  background: linear-gradient(100deg, #ffe08a 5%, #fb923c 35%, #f472b6 65%, #67e8f9 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(2px 3px 0 rgba(0, 0, 0, 0.55)) drop-shadow(0 0 18px rgba(244, 114, 182, 0.35));
+}
+
+.hero-undertitel {
+  margin: 0 0 14px;
+  font-style: italic;
+  letter-spacing: 0.3em;
+  font-size: 0.8rem;
+  color: var(--text-sekundar);
+}
+
+.hero-niva {
+  border: 1px solid var(--kant);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin: 10px 0 14px;
+  background: rgba(7, 8, 16, 0.55);
+}
+
+.hero-niva-rad {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.hero-niva-etikett {
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-sekundar);
+}
+
+.hero-niva-varde {
+  font-size: 1.7rem;
+  font-weight: 800;
+  font-style: italic;
+  color: var(--accent-text);
+  text-shadow: 0 0 16px rgba(34, 211, 238, 0.55);
+}
+
+/* Kraftmätare: fyllningen bär färgen, spåret är ett ljusare steg av samma ramp */
+.power-meter {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(34, 211, 238, 0.14);
+  overflow: hidden;
+  margin: 6px 0;
+}
+
+.power-meter-fyllning {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #0aa2c0, #818cf8, #f472b6);
+  box-shadow: 0 0 12px rgba(34, 211, 238, 0.55);
+  transition: width 0.6s ease;
+}
+
+.kraft {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  border: 1px solid var(--kant);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin: 10px 0;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.kraft-ikon { font-size: 1.7rem; line-height: 1.2; }
+
+.kraft-innehall { flex: 1; min-width: 0; }
+
+.kraft-rubrikrad {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.kraft-namn {
+  font-weight: 800;
+  font-style: italic;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  font-size: 0.92rem;
+}
+
+.kraft-status {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 2px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--kant);
+  white-space: nowrap;
+}
+
+.kraft-beskrivning { margin: 4px 0 6px; font-size: 0.92rem; color: var(--text-sekundar); }
+
+.kraft-upplast {
+  border-color: rgba(251, 191, 36, 0.55);
+  background: rgba(251, 191, 36, 0.06);
+  box-shadow: 0 0 18px -6px rgba(251, 191, 36, 0.5);
+}
+.kraft-upplast .kraft-status { color: #ffe08a; border-color: rgba(251, 191, 36, 0.5); }
+.kraft-upplast .kraft-namn { color: #ffe08a; text-shadow: 0 0 12px rgba(251, 191, 36, 0.45); }
+
+.kraft-pagar { border-color: rgba(103, 232, 249, 0.45); }
+.kraft-pagar .kraft-status { color: var(--accent-text); border-color: rgba(103, 232, 249, 0.5); }
+
+.kraft-last { opacity: 0.72; }
+.kraft-last .kraft-status { color: var(--text-dampad); }
+
+.kraft-bonus { border-style: dashed; }
+.kraft-bonus .kraft-status { color: #f0abfc; border-color: rgba(232, 121, 249, 0.45); }
 
 /* ---------- Utility ---------- */
 .gomd { display: none !important; }

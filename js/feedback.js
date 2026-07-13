@@ -397,6 +397,53 @@ function dagensPass(data) {
   return resultat;
 }
 
+/* ---------- Superpappa: kraftstatus och total nivå ----------
+   Rent härledd ur datan: gångsteg driver 60 % av nivån, fasen 40 %.
+------------------------------------------------------------- */
+function superpappaStatus(data) {
+  var gangsteg = data.installningar.gangsteg;
+  var fas = data.installningar.fas;
+
+  function procentFor(kraft) {
+    if (kraft.kravTyp === "gangsteg") {
+      if (kraft.krav <= 1) return 100;
+      return Math.min(100, Math.round(((gangsteg - 1) / (kraft.krav - 1)) * 100));
+    }
+    if (kraft.kravTyp === "fas") {
+      if (kraft.krav <= 1) return 100;
+      return Math.min(100, Math.round(((fas - 1) / (kraft.krav - 1)) * 100));
+    }
+    return 0;
+  }
+
+  /* Nästa milstolpe per spår blir "pågår" */
+  var nastaGangKrav = null, nastaFasKrav = null;
+  SUPERPAPPA.krafter.forEach(function (k) {
+    if (k.kravTyp === "gangsteg" && gangsteg < k.krav && (nastaGangKrav === null || k.krav < nastaGangKrav)) {
+      nastaGangKrav = k.krav;
+    }
+    if (k.kravTyp === "fas" && fas < k.krav && (nastaFasKrav === null || k.krav < nastaFasKrav)) {
+      nastaFasKrav = k.krav;
+    }
+  });
+
+  var krafter = SUPERPAPPA.krafter.map(function (k) {
+    if (k.kravTyp === "bonus") {
+      return { kraft: k, status: "bonus", procent: 0 };
+    }
+    var upplast = k.kravTyp === "gangsteg" ? gangsteg >= k.krav : fas >= k.krav;
+    var status = "last";
+    if (upplast) status = "upplast";
+    else if ((k.kravTyp === "gangsteg" && k.krav === nastaGangKrav) ||
+             (k.kravTyp === "fas" && k.krav === nastaFasKrav)) status = "pagar";
+    return { kraft: k, status: status, procent: procentFor(k) };
+  });
+
+  var niva = Math.round((((gangsteg - 1) / (GANGPROGRAM.length - 1)) * 0.6 + ((fas - 1) / 2) * 0.4) * 100);
+
+  return { niva: niva, krafter: krafter, gangsteg: gangsteg, fas: fas };
+}
+
 /* ---------- Gångprogrammet: statusbedömning ----------
    Varje gång-post stämplas med det steg den gjordes på (post.gangsteg,
    sätts i sparaPass). Bara gångPASS (inte enskilda poster) gjorda på

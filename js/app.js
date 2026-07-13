@@ -80,6 +80,7 @@ var FLIKAR = [
   { id: "program", namn: "Program", ikon: "🗓️" },
   { id: "ovningar", namn: "Övningar", ikon: "💪" },
   { id: "historik", namn: "Historik", ikon: "📈" },
+  { id: "superpappa", namn: "Superpappa", ikon: "🦸" },
   { id: "profil", namn: "Profil", ikon: "🩺" }
 ];
 
@@ -104,6 +105,7 @@ function renderaFlik(flikId) {
   if (flikId === "program") renderaProgram();
   if (flikId === "ovningar") renderaOvningar();
   if (flikId === "historik") renderaHistorik();
+  if (flikId === "superpappa") renderaSuperpappa();
   if (flikId === "profil") renderaProfil();
 }
 
@@ -927,6 +929,95 @@ function veckoGangSerie() {
     });
     return { etikett: veckoEtikett(v), varde: summa };
   });
+}
+
+/* =========================================================
+   VY: SUPERPAPPA (till Jessica)
+   ========================================================= */
+var KRAFT_STATUS = {
+  upplast: { etikett: "⭐ UPPLÅST!", klass: "kraft-upplast" },
+  pagar:   { etikett: "⚡ PÅGÅR", klass: "kraft-pagar" },
+  last:    { etikett: "🔒 Låst", klass: "kraft-last" },
+  bonus:   { etikett: "✨ Bonus", klass: "kraft-bonus" }
+};
+
+function kraftKravText(kraft) {
+  if (kraft.kravTyp === "gangsteg") return "Låses upp vid gångprogrammets steg " + kraft.krav + " av " + GANGPROGRAM.length;
+  if (kraft.kravTyp === "fas") return "Låses upp i fas " + kraft.krav;
+  return "Överkurs – ingen press, bara en dröm";
+}
+
+function powerMeter(procent, ariaEtikett) {
+  var meter = el("div", {
+    class: "power-meter", role: "meter",
+    "aria-valuemin": "0", "aria-valuemax": "100", "aria-valuenow": String(procent),
+    "aria-label": ariaEtikett
+  }, [
+    el("div", { class: "power-meter-fyllning", style: "width:" + procent + "%" })
+  ]);
+  return meter;
+}
+
+function renderaSuperpappa() {
+  var vy = document.getElementById("vy-superpappa");
+  toms(vy);
+
+  var status = superpappaStatus(DATA);
+
+  /* Hjältebanner */
+  var hero = el("div", { class: "kort hero-superpappa" }, [
+    el("span", { class: "hero-katakana", text: "スーパーパパ", "aria-hidden": "true" }),
+    el("span", { class: "hero-gnistra g1", text: "✦", "aria-hidden": "true" }),
+    el("span", { class: "hero-gnistra g2", text: "✧", "aria-hidden": "true" }),
+    el("span", { class: "hero-gnistra g3", text: "✦", "aria-hidden": "true" }),
+    el("p", { class: "hero-till", text: SUPERPAPPA.halsning }),
+    el("h2", { class: "hero-titel", text: "SUPERPAPPA" }),
+    el("p", { class: "hero-undertitel", text: "– i träning –" }),
+    el("div", { class: "hero-niva" }, [
+      el("div", { class: "hero-niva-rad" }, [
+        el("span", { class: "hero-niva-etikett", text: "Superpappa-nivå" }),
+        el("span", { class: "hero-niva-varde", text: status.niva + " %" })
+      ]),
+      powerMeter(status.niva, "Superpappa-nivå: " + status.niva + " procent"),
+      el("p", { class: "liten", text: "Gångprogram: steg " + status.gangsteg + " av " + GANGPROGRAM.length + " · Fas " + status.fas + " av 3" })
+    ])
+  ]);
+  SUPERPAPPA.intro.forEach(function (t) { hero.appendChild(el("p", { text: t })); });
+  vy.appendChild(hero);
+
+  /* Krafterna */
+  var kraftKort = el("div", { class: "kort" }, [
+    el("h2", { text: "Krafter som låses upp 💥" }),
+    el("p", { class: "dampad", text: "Varje kraft låses upp automatiskt när träningen når sin milstolpe – det här är alltså live-status, inte önskelista." })
+  ]);
+
+  status.krafter.forEach(function (k) {
+    var info = KRAFT_STATUS[k.status];
+    var kraft = el("div", { class: "kraft " + info.klass }, [
+      el("span", { class: "kraft-ikon", text: k.kraft.ikon, "aria-hidden": "true" }),
+      el("div", { class: "kraft-innehall" }, [
+        el("div", { class: "kraft-rubrikrad" }, [
+          el("span", { class: "kraft-namn", text: k.kraft.namn }),
+          el("span", { class: "kraft-status", text: info.etikett })
+        ]),
+        el("p", { class: "kraft-beskrivning", text: k.kraft.beskrivning }),
+        k.status === "upplast" || k.status === "bonus"
+          ? null
+          : powerMeter(k.procent, k.kraft.namn + ": " + k.procent + " procent"),
+        k.status === "upplast"
+          ? null
+          : el("p", { class: "liten", text: kraftKravText(k.kraft) })
+      ])
+    ]);
+    kraftKort.appendChild(kraft);
+  });
+  vy.appendChild(kraftKort);
+
+  /* Avslutning till Jessica */
+  vy.appendChild(el("div", { class: "kort" }, [
+    el("h2", { text: SUPERPAPPA.avslutning.rubrik }),
+    el("p", { text: SUPERPAPPA.avslutning.text })
+  ]));
 }
 
 /* =========================================================

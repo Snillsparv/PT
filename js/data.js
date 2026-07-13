@@ -651,6 +651,74 @@ const OVNINGAR = [
   }
 ];
 
+/* ---------- Superpappa-sektionen (till Jessica) ----------
+   Krafterna låses upp automatiskt utifrån verklig träningsdata:
+   kravTyp "gangsteg" jämförs med gångprogrammets steg, "fas" med
+   aktuell fas. Ordningen är den ungefärliga upplåsningsordningen. */
+const SUPERPAPPA = {
+  halsning: "Hej Jessica! 💌",
+  intro: [
+    "Det här är sidan där du kan följa vad all min träning ska leda till. Programmet är " +
+    "byggt precis för min kropp: supersnälla doser som växer långsamt, så att jag blir " +
+    "starkare utan bakslag.",
+    "Planen har tre faser och ett gångprogram i 18 steg. Varje grönt pass tar mig ett " +
+    "steg närmare listan här nedanför. Det går långsamt – men det är själva poängen. " +
+    "Även superhjältar har en origin story."
+  ],
+  krafter: [
+    {
+      ikon: "🚶", namn: "Kvarterspatrullen",
+      beskrivning: "Runda kvarteret tillsammans i lugnt tempo – utan att räkna meter.",
+      kravTyp: "gangsteg", krav: 4
+    },
+    {
+      ikon: "🌳", namn: "Parkexpeditionen",
+      beskrivning: "Gå till parken, hänga där en stund och gå hela vägen hem igen.",
+      kravTyp: "gangsteg", krav: 8
+    },
+    {
+      ikon: "🛒", namn: "Kassbärarkraften",
+      beskrivning: "Bära hem matkassarna – i båda händerna! – utan att fingrarna protesterar dagen efter.",
+      kravTyp: "fas", krav: 2
+    },
+    {
+      ikon: "🏙️", namn: "Stadsvandraren",
+      beskrivning: "En hel stadsrunda: affärer, fik och lite planlöst strosande, utan att spana efter sittplatser.",
+      kravTyp: "gangsteg", krav: 12
+    },
+    {
+      ikon: "🥐", namn: "Bagarmästaren",
+      beskrivning: "Knåda en riktig bulldeg för hand igen. Kanelbullar på söndagar, någon?",
+      kravTyp: "fas", krav: 3
+    },
+    {
+      ikon: "🥾", namn: "Söndagsströvaren",
+      beskrivning: "Långa söndagspromenader och lättare utflykter i skogen.",
+      kravTyp: "gangsteg", krav: 15
+    },
+    {
+      ikon: "🤸", namn: "Lekmonstret",
+      beskrivning: "Busa, kicka boll och bygga kojor utan att behöva ransonera orken.",
+      kravTyp: "fas", krav: 3
+    },
+    {
+      ikon: "🦸", namn: "Vardagshjälten",
+      beskrivning: "Gå, stå, bära, fixa och greja en hel dag i sträck – som vilken superhjälte som helst.",
+      kravTyp: "gangsteg", krav: 18
+    },
+    {
+      ikon: "✨", namn: "Bonusnivån",
+      beskrivning: "Kanske, någon vacker dag: jogga en liten bit igen. Men mest kommer den här hjälten att gå – snabbt, långt och glatt.",
+      kravTyp: "bonus", krav: 0
+    }
+  ],
+  avslutning: {
+    rubrik: "Din superkraft i det här",
+    text: "Fira de gröna veckorna med mig. Påminn mig om att vilodagar också är träning. " +
+      "Och när jag säger att jag bara ska ta en kort promenad – följ gärna med. がんばって!"
+  }
+};
+
 /* ---------- Gångprogrammet ----------
    Stegen är medvetet små: den sammanhängande gångtiden (det som
    provocerar benhinnorna mest) ökar aldrig mer än ca 10–15 % per steg. */
