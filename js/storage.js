@@ -17,7 +17,9 @@ function tomData() {
     /* morgonkoll: { datum, regioner: { kna: 0-10, ... }, kommentar } */
     morgonkoll: [],
     /* pass: { id, datum, rubrik, poster: [{ ovningId, set, reps, vikt, sek, min, smarta, kommentar }], kansla, kommentar } */
-    pass: []
+    pass: [],
+    /* dagbok: { datum, text } – en fri rad om dagen, oberoende av träningen */
+    dagbok: []
   };
 }
 
@@ -69,6 +71,15 @@ function normaliseraData(data) {
           return renPost;
         })
       };
+    });
+  }
+
+  if (Array.isArray(data.dagbok)) {
+    ren.dagbok = data.dagbok.filter(function (d) {
+      return d && typeof d === "object" && typeof d.datum === "string" &&
+        typeof d.text === "string" && d.text.trim() !== "";
+    }).map(function (d) {
+      return { datum: d.datum, text: d.text };
     });
   }
 
@@ -210,6 +221,14 @@ function claudeSammanfattning(data) {
       });
       if (delar.length) rader.push("- " + k.datum + ": " + delar.join(", ") + (k.kommentar ? " (" + k.kommentar + ")" : ""));
     });
+  }
+
+  var dagbok = (data.dagbok || []).filter(function (d) { return d.datum >= grans; })
+    .sort(function (a, b) { return a.datum < b.datum ? -1 : 1; });
+  if (dagbok.length) {
+    rader.push("");
+    rader.push("Dagboksanteckningar:");
+    dagbok.forEach(function (d) { rader.push("- " + d.datum + ": " + d.text); });
   }
 
   rader.push("");

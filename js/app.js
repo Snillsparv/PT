@@ -12,6 +12,7 @@ var LAGE = {
   loggRubrik: "",
   loggDatum: "",       /* valt datum i loggformuläret ("" = idag) */
   morgonkollRedigerar: false,
+  dagbokRedigerar: false,
   senasteFeedback: []  /* feedback från senast sparade pass (denna session) */
 };
 
@@ -63,6 +64,31 @@ function regionTagg(regionId) {
   }, [
     el("span", { "aria-hidden": "true", text: r.ikon }),
     r.namn
+  ]);
+}
+
+/* ---------- Övningsinfo (delad av biblioteket och passlistorna) ---------- */
+function ovningsInfo(o) {
+  return [
+    el("p", null, [el("strong", { text: "Så gör du: " }), o.beskrivning]),
+    el("p", null, [el("strong", { text: "Startdos: " }), dosText(o) + (o.utrustning ? " · Utrustning: " + o.utrustning : "")]),
+    el("p", null, [el("strong", { text: "Därför är den bra för dig: " }), o.darfor]),
+    el("p", null, [el("strong", { text: "Se upp med: " }), o.seUpp])
+  ];
+}
+
+/* Utfällbar rad i dagens pass / veckoscheman: tryck på övningen för
+   att se hela beskrivningen utan att lämna vyn. */
+function passlistaRad(o, dosStr) {
+  return el("li", null, [
+    el("details", { class: "passlista-rad" }, [
+      el("summary", null, [
+        el("span", { class: "namn" }, [regionIkon(o.region), o.namn]),
+        el("span", { class: "dos", text: dosStr }),
+        el("span", { class: "chevron", "aria-hidden": "true", text: "▾" })
+      ]),
+      el("div", { class: "passlista-detaljer" }, ovningsInfo(o))
+    ])
   ]);
 }
 
@@ -133,12 +159,10 @@ function renderaIdag() {
         var gs = gangStatus(DATA);
         dosStr = "steg " + gs.steg + ": " + gs.info.beskrivning;
       }
-      lista.appendChild(el("li", null, [
-        el("span", { class: "namn" }, [regionIkon(o.region), o.namn]),
-        el("span", { class: "dos", text: dosStr })
-      ]));
+      lista.appendChild(passlistaRad(o, dosStr));
     });
     passKort.appendChild(lista);
+    passKort.appendChild(el("p", { class: "liten", text: "Tryck på en övning för att se hur den görs." }));
     passKort.appendChild(el("div", { class: "knapprad" }, [
       el("button", {
         class: "primar", text: "Logga dagens pass",
@@ -154,6 +178,9 @@ function renderaIdag() {
 
   /* Morgonkoll */
   vy.appendChild(morgonkollKort());
+
+  /* Dagbok */
+  vy.appendChild(dagbokKort());
 
   /* Veckans läge */
   var analys = veckoAnalys(DATA);
@@ -256,6 +283,50 @@ function morgonkollKort() {
     })
   ]));
 
+  return kort;
+}
+
+/* ---------- Dagbok: en fri rad om dagen ---------- */
+function dagbokKort() {
+  var idag = idagStr();
+  var post = DATA.dagbok.find(function (d) { return d.datum === idag; }) || null;
+  var kort = el("div", { class: "kort" }, [el("h2", { text: "Dagbok 📓" })]);
+
+  if (post && !LAGE.dagbokRedigerar) {
+    kort.appendChild(el("p", { text: post.text }));
+    kort.appendChild(el("div", { class: "knapprad" }, [
+      el("button", {
+        class: "mini", text: "Ändra",
+        onclick: function () { LAGE.dagbokRedigerar = true; renderaIdag(); }
+      })
+    ]));
+    return kort;
+  }
+
+  kort.appendChild(el("p", { class: "dampad", text: "Några rader om dagen – helt fristående från träningen. Bara för dig." }));
+  var ruta = el("textarea", {
+    placeholder: "Hur var dagen?",
+    "aria-label": "Dagboksanteckning för idag"
+  });
+  ruta.value = post ? post.text : "";
+  kort.appendChild(ruta);
+  kort.appendChild(el("div", { class: "knapprad" }, [
+    el("button", {
+      class: "primar", text: "Spara dagboksrad",
+      onclick: function () {
+        var tidigare = DATA.dagbok;
+        var text = ruta.value.trim();
+        DATA.dagbok = DATA.dagbok.filter(function (d) { return d.datum !== idag; });
+        if (text) DATA.dagbok.push({ datum: idag, text: text });
+        if (!sparaData(DATA)) {
+          DATA.dagbok = tidigare;
+          return;
+        }
+        LAGE.dagbokRedigerar = false;
+        renderaIdag();
+      }
+    })
+  ]));
   return kort;
 }
 
@@ -560,10 +631,7 @@ function renderaProgram() {
         dag.ovningar.forEach(function (id) {
           var o = getOvning(id);
           if (!o) return;
-          lista.appendChild(el("li", null, [
-            el("span", { class: "namn" }, [regionIkon(o.region), o.namn]),
-            el("span", { class: "dos", text: dosText(o) })
-          ]));
+          lista.appendChild(passlistaRad(o, dosText(o)));
         });
         dagDiv.appendChild(lista);
       }
@@ -611,12 +679,8 @@ function ovningsKort(o) {
       regionTagg(o.region),
       el("span", { class: "tagg", text: TYP_NAMN[o.typ] }),
       el("span", { class: "tagg tagg-niva", text: "Nivå " + o.niva })
-    ]),
-    el("p", null, [el("strong", { text: "Så gör du: " }), o.beskrivning]),
-    el("p", null, [el("strong", { text: "Startdos: " }), dosText(o) + (o.utrustning ? " · Utrustning: " + o.utrustning : "")]),
-    el("p", null, [el("strong", { text: "Därför är den bra för dig: " }), o.darfor]),
-    el("p", null, [el("strong", { text: "Se upp med: " }), o.seUpp])
-  ]);
+    ])
+  ].concat(ovningsInfo(o)));
   if (o.next) {
     var nasta = getOvning(o.next);
     detaljer.appendChild(el("p", { class: "liten", text: "Nästa steg i kedjan: " + nasta.namn }));
@@ -777,6 +841,22 @@ function renderaHistorik() {
       passKort.appendChild(ruta);
     });
   vy.appendChild(passKort);
+
+  /* Dagbok */
+  if (DATA.dagbok.length) {
+    var dagbok = el("div", { class: "kort" }, [el("h2", { text: "Dagbok" })]);
+    DATA.dagbok
+      .slice()
+      .sort(function (a, b) { return a.datum > b.datum ? -1 : 1; })
+      .slice(0, 21)
+      .forEach(function (d) {
+        dagbok.appendChild(el("p", null, [
+          el("strong", { text: finDatum(d.datum) + ": " }),
+          d.text
+        ]));
+      });
+    vy.appendChild(dagbok);
+  }
 
   /* Data */
   var dataKort = el("div", { class: "kort" }, [

@@ -428,16 +428,37 @@ button.chip[aria-pressed="true"] {
 /* ---------- Dagens pass-lista ---------- */
 ul.passlista { list-style: none; margin: 8px 0; padding: 0; }
 ul.passlista li {
-  padding: 9px 0;
   border-bottom: 1px solid var(--grid);
-  display: flex;
-  gap: 10px;
-  align-items: baseline;
-  flex-wrap: wrap;
+  display: block;
 }
 ul.passlista li:last-child { border-bottom: none; }
 ul.passlista li .namn { flex: 1; display: inline-flex; align-items: baseline; gap: 8px; }
 ul.passlista .dos { color: var(--text-sekundar); font-size: 0.85rem; white-space: nowrap; }
+
+/* Utfällbar övningsrad: tryck för hela beskrivningen */
+details.passlista-rad summary {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  flex-wrap: wrap;
+  padding: 9px 0;
+  cursor: pointer;
+  list-style: none;
+}
+details.passlista-rad summary::-webkit-details-marker { display: none; }
+details.passlista-rad .chevron {
+  color: var(--text-dampad);
+  font-size: 0.8rem;
+  transition: transform 0.15s ease;
+}
+details.passlista-rad[open] .chevron { transform: rotate(180deg); }
+details.passlista-rad[open] summary .namn { color: var(--accent-text); }
+.passlista-detaljer {
+  padding: 0 2px 12px;
+  font-size: 0.9rem;
+}
+.passlista-detaljer p { margin: 5px 0; color: var(--text-sekundar); }
+.passlista-detaljer strong { color: var(--text); }
 
 /* ---------- Loggade poster ---------- */
 .post-rad {
