@@ -1048,7 +1048,7 @@ function renderaSuperpappa() {
   var hero = el("div", { class: "kort hero-superpappa" }, [
     el("img", {
       src: "img/superpappa-hero.webp",
-      alt: "Animetecknad chibi-superpappa i mantel som flyger mot betraktaren över en neonstad i natten",
+      alt: "Mangatecknad pappa i sliten rock med blixtemblem, stående i regnet på ett hustak medan en blixt slår ner över staden",
       class: "hero-bild"
     }),
     el("span", { class: "hero-katakana", text: "スーパーパパ", "aria-hidden": "true" }),
