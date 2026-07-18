@@ -163,15 +163,22 @@ function renderaIdag() {
     });
     passKort.appendChild(lista);
     passKort.appendChild(el("p", { class: "liten", text: "Tryck på en övning för att se hur den görs." }));
-    passKort.appendChild(el("div", { class: "knapprad" }, [
-      el("button", {
-        class: "primar", text: "Logga dagens pass",
-        onclick: function () { forbestamLogg(plan); }
-      })
-    ]));
   } else {
     passKort.appendChild(el("p", { text: "Vilodag! Vila är träning för dina senor – njut av den med gott samvete." }));
   }
+
+  /* Logga-knappar: dagens pass + gårdagens i efterhand (för kvällspass
+     som loggas först efter midnatt) */
+  passKort.appendChild(el("div", { class: "knapprad" }, [
+    plan.ovningar.length ? el("button", {
+      class: "primar", text: "Logga dagens pass",
+      onclick: function () { forbestamLogg(plan); }
+    }) : null,
+    el("button", {
+      class: "sekundar", text: "Logga gårdagens pass",
+      onclick: function () { forbestamLogg(dagensPass(DATA, igarStr()), igarStr()); }
+    })
+  ]));
 
   plan.justeringar.forEach(function (m) { passKort.appendChild(meddElement(m)); });
   vy.appendChild(passKort);
@@ -333,10 +340,10 @@ function dagbokKort() {
 /* =========================================================
    VY: LOGGA
    ========================================================= */
-function forbestamLogg(plan) {
+function forbestamLogg(plan, datum) {
   LAGE.loggPoster = plan.ovningar.map(function (o) { return nyPost(o.id); });
   LAGE.loggRubrik = plan.rubrik;
-  LAGE.loggDatum = idagStr();
+  LAGE.loggDatum = datum || idagStr();
   bytFlik("logga");
 }
 
@@ -376,7 +383,27 @@ function renderaLogga() {
     oninput: function (e) { LAGE.loggRubrik = e.target.value; }
   });
   kort.appendChild(el("label", { text: "Datum", for: "logg-datum" }));
+
+  /* Snabbval: idag/igår – kvällspass loggas ofta först efter midnatt */
+  function datumChip(namn, datum) {
+    return el("button", {
+      class: "chip", type: "button",
+      "aria-pressed": LAGE.loggDatum === datum ? "true" : "false",
+      onclick: function () { LAGE.loggDatum = datum; renderaLogga(); }
+    }, [namn]);
+  }
+  kort.appendChild(el("div", { class: "chip-rad", role: "group", "aria-label": "Snabbval av datum" }, [
+    datumChip("Idag", idagStr()),
+    datumChip("Igår", igarStr())
+  ]));
   kort.appendChild(datumInput);
+
+  if (new Date().getHours() < 5 && LAGE.loggDatum === idagStr()) {
+    kort.appendChild(el("p", {
+      class: "liten",
+      text: "🌙 Efter midnatt: gjorde du passet i går kväll? Välj Igår ovan så hamnar det på rätt dag i statistiken."
+    }));
+  }
   kort.appendChild(el("label", { text: "Rubrik (valfritt)", for: "logg-rubrik" }));
   kort.appendChild(rubrikInput);
 
@@ -774,6 +801,19 @@ function renderaHistorik() {
   vy.appendChild(statKort);
 
   /* Diagram */
+  var utveckling = stegUtvecklingsSerie();
+  vy.appendChild(diagramKort(
+    "Din väg till steg " + GANGPROGRAM.length + " – utveckling & prognos",
+    utveckling.forklaring,
+    utveckling.serie,
+    "linje",
+    {
+      enhet: "steg", maxVarde: GANGPROGRAM.length,
+      etikettRubrik: "Vecka", vardeRubrik: "Gångsteg",
+      prognosLegend: true
+    }
+  ));
+
   vy.appendChild(diagramKort(
     "Belastning per vecka",
     "Varje styrkeset ger 1 poäng, varje isometriskt set ett halvt poäng och varje 10 minuter kondition 1 poäng. En jämn, långsamt stigande kurva är målet – inte toppar.",
@@ -916,6 +956,18 @@ function diagramKort(rubrik, forklaring, serie, typ, opts) {
     el("h2", { text: rubrik }),
     el("p", { class: "dampad", text: forklaring })
   ]);
+  /* Legend när diagrammet har både utfall och prognos – identiteten bärs
+     av linjestilen (heldragen/streckad), aldrig av färg ensam. */
+  if (opts && opts.prognosLegend && serie.length) {
+    kort.appendChild(el("div", { class: "diagram-legend" }, [
+      el("span", { class: "legend-post" }, [
+        el("span", { class: "legend-linje", "aria-hidden": "true" }), "Uppnått steg"
+      ]),
+      el("span", { class: "legend-post" }, [
+        el("span", { class: "legend-linje prognos", "aria-hidden": "true" }), "Prognos"
+      ])
+    ]));
+  }
   var behallare = el("div", { class: "diagram-behallare" });
   var tabellBehallare = el("div", { class: "gomd" });
   kort.appendChild(behallare);
@@ -960,6 +1012,83 @@ function senasteVeckor(antal) {
 function veckoEtikett(veckoStartStr) {
   var d = parseDatum(veckoStartStr);
   return d.getDate() + "/" + (d.getMonth() + 1);
+}
+
+/* Gångprogrammets utveckling + prognos: heldragen linje för högsta steg
+   per vecka (ur gång-posternas stegstämplar), streckad prognos framåt
+   till sista steget. Takten hämtas ur den egna historiken när den finns,
+   annars programmets riktfart. */
+function stegUtvecklingsSerie() {
+  var mal = GANGPROGRAM.length;
+  var stegNu = DATA.installningar.gangsteg;
+  var dennaVecka = veckostart(idagStr());
+
+  /* Högsta tränade steg per vecka */
+  var perVecka = {};
+  var forstaVecka = null;
+  DATA.pass.forEach(function (p) {
+    p.poster.forEach(function (post) {
+      if (post.ovningId !== "gang" || post.gangsteg === undefined) return;
+      var v = veckostart(p.datum);
+      var s = Number(post.gangsteg);
+      if (!perVecka[v] || s > perVecka[v]) perVecka[v] = s;
+      if (!forstaVecka || v < forstaVecka) forstaVecka = v;
+    });
+  });
+
+  /* Historikfönster: från första gångpasset (max 11 veckor bakåt) till nu */
+  var serie = [];
+  var startVecka = dennaVecka;
+  if (forstaVecka) {
+    var minVecka = parseDatum(dennaVecka);
+    minVecka.setDate(minVecka.getDate() - 11 * 7);
+    startVecka = forstaVecka > datumStr(minVecka) ? forstaVecka : datumStr(minVecka);
+  }
+  for (var d = parseDatum(startVecka); ; d.setDate(d.getDate() + 7)) {
+    var v = datumStr(d);
+    if (v > dennaVecka) break;
+    var varde = perVecka[v] || null;
+    if (v === dennaVecka) varde = Math.max(varde || 0, stegNu);
+    serie.push({ etikett: veckoEtikett(v), varde: varde });
+  }
+
+  /* Takt: veckor per steg ur historiken om det finns minst ett stegs
+     verklig stegring, annars riktfarten 1,5 veckor/steg. */
+  var takt = null;
+  if (forstaVecka && stegNu > perVecka[forstaVecka]) {
+    var veckorSpann = dagarMellan(forstaVecka, dennaVecka) / 7;
+    if (veckorSpann >= 1) {
+      takt = veckorSpann / (stegNu - perVecka[forstaVecka]);
+      takt = Math.min(Math.max(takt, 0.5), 8);
+    }
+  }
+  var egenTakt = takt !== null;
+  if (!egenTakt) takt = 1.5;
+
+  var forklaring;
+  if (stegNu >= mal) {
+    forklaring = "Du har nått gångprogrammets sista steg – hela vägen uppe! Linjen visar resan dit, vecka för vecka.";
+  } else {
+    /* Prognos: en punkt per vecka tills målet nås (max ett halvår framåt) */
+    var framme = null;
+    for (var i = 1; i <= 26; i++) {
+      var s = Math.min(mal, Math.floor(stegNu + i / takt + 0.000001));
+      var pd = parseDatum(dennaVecka);
+      pd.setDate(pd.getDate() + i * 7);
+      serie.push({ etikett: veckoEtikett(datumStr(pd)), varde: s, prognos: true });
+      if (s >= mal) { framme = datumStr(pd); break; }
+    }
+    var taktText = egenTakt
+      ? "din faktiska takt hittills (ca " + String(Math.round(takt * 10) / 10).replace(".", ",") + " veckor per steg)"
+      : "programmets riktfart (ca 1,5 veckor per steg)";
+    forklaring = "Heldragen linje: högsta gångsteg du tränat på per vecka. Streckad linje: prognos i " +
+      taktText +
+      (framme ? " – i den takten når du steg " + mal + " runt " + finDatum(framme) + "." :
+        " – fortsätt bara framåt, kurvan är din.") +
+      " Prognosen räknas om varje vecka efter hur det faktiskt går.";
+  }
+
+  return { serie: serie, forklaring: forklaring };
 }
 
 function veckoBelastningsSerie() {

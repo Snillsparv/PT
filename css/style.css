@@ -36,7 +36,7 @@
   --accent-mork: #c2410c;
   --accent-text: #fdba74;      /* orange som klarar text på mörk yta */
   --accent-yta: rgba(249, 115, 22, 0.12);
-  --serie-1: #e08a3c; /* diagramserie: orange i rätt ljushetsband för mörk yta */
+  --serie-1: #c97728; /* diagramserie: orange i rätt ljushetsband för mörk yta (validerad: OKLCH L 0,48–0,67, kontrast ≥3:1) */
 
   --status-ok: #4ade80;
   --status-ok-text: #6ee7a0;
@@ -595,6 +595,28 @@ details.passlista-rad[open] summary .namn { color: var(--accent-text); }
   stroke-linecap: round;
 }
 .diagram-punkt { fill: var(--serie-1); stroke: var(--yta); stroke-width: 2; }
+
+/* Prognosdelen: samma färg men streckad linje och ofyllda punkter –
+   skillnaden bärs av formen, inte av färgen. */
+.diagram-linje.prognos { stroke-dasharray: 6 5; opacity: 0.85; }
+.diagram-punkt.prognos { fill: var(--yta); stroke: var(--serie-1); }
+
+.diagram-legend {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin: 2px 0 4px;
+  font-size: 0.78rem;
+  color: var(--text-sekundar);
+}
+.diagram-legend .legend-post { display: inline-flex; align-items: center; gap: 7px; }
+.legend-linje {
+  display: inline-block;
+  width: 24px;
+  height: 0;
+  border-top: 3px solid var(--serie-1);
+}
+.legend-linje.prognos { border-top-style: dashed; }
 
 .diagram-tomt { color: var(--text-sekundar); font-size: 0.9rem; padding: 18px 0; }
 
