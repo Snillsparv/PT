@@ -180,16 +180,27 @@ function ritaLinjediagram(container, serie, opts) {
     return n > 1 ? grund.marg.vanster + stegX * i : grund.marg.vanster + grund.plotB / 2;
   }
 
-  /* Linjen – bryts vid null så att uppehåll syns som luckor */
+  /* Linjen – bryts vid null så att uppehåll syns som luckor. Punkter
+     märkta prognos ritas som en streckad fortsättning från sista
+     verkliga punkten. */
   if (n > 1) {
-    var d = "";
-    var forra = false;
+    var dUtfall = "", dPrognos = "";
+    var forra = null; /* { x, y, prognos } för förra ritade punkten */
     serie.forEach(function (p, i) {
-      if (p.varde === null || p.varde === undefined) { forra = false; return; }
-      d += (forra ? " L" : " M") + xFor(i) + "," + grund.yFor(p.varde);
-      forra = true;
+      if (p.varde === null || p.varde === undefined) { forra = null; return; }
+      var x = xFor(i), y = grund.yFor(p.varde);
+      if (!p.prognos) {
+        dUtfall += (forra && !forra.prognos ? " L" : " M") + x + "," + y;
+      } else if (forra && !forra.prognos) {
+        /* övergången: prognosen börjar i sista verkliga punkten */
+        dPrognos += " M" + forra.x + "," + forra.y + " L" + x + "," + y;
+      } else {
+        dPrognos += (forra ? " L" : " M") + x + "," + y;
+      }
+      forra = { x: x, y: y, prognos: !!p.prognos };
     });
-    if (d) grund.svg.appendChild(svgEl("path", { d: d.trim(), "class": "diagram-linje" }));
+    if (dUtfall) grund.svg.appendChild(svgEl("path", { d: dUtfall.trim(), "class": "diagram-linje" }));
+    if (dPrognos) grund.svg.appendChild(svgEl("path", { d: dPrognos.trim(), "class": "diagram-linje prognos" }));
   }
 
   /* Punkter med yt-ring + träffytor */
@@ -207,14 +218,19 @@ function ritaLinjediagram(container, serie, opts) {
     if (saknas) return;
 
     var cy = grund.yFor(p.varde);
-    grund.svg.appendChild(svgEl("circle", { cx: cx, cy: cy, r: 4, "class": "diagram-punkt" }));
+    grund.svg.appendChild(svgEl("circle", {
+      cx: cx, cy: cy, r: 4,
+      "class": "diagram-punkt" + (p.prognos ? " prognos" : "")
+    }));
 
     var halvband = n > 1 ? stegX / 2 : grund.plotB / 2;
     var traff = svgEl("rect", {
       x: cx - halvband, y: grund.marg.topp, width: halvband * 2, height: grund.plotH, fill: "transparent"
     });
     traff.addEventListener("mouseenter", function () {
-      visaTooltip(grund, container, cx, cy, p.etikett, formateraVarde(p.varde) + (opts.enhet ? " " + opts.enhet : ""));
+      visaTooltip(grund, container, cx, cy,
+        p.etikett + (p.prognos ? " (prognos)" : ""),
+        formateraVarde(p.varde) + (opts.enhet ? " " + opts.enhet : ""));
     });
     traff.addEventListener("mouseleave", function () { gomTooltip(grund); });
     grund.svg.appendChild(traff);
@@ -239,7 +255,7 @@ function ritaTabell(container, serie, opts) {
   serie.forEach(function (p) {
     var rad = document.createElement("tr");
     var td1 = document.createElement("td");
-    td1.textContent = p.etikett;
+    td1.textContent = p.etikett + (p.prognos ? " (prognos)" : "");
     var td2 = document.createElement("td");
     td2.textContent = (p.varde === null || p.varde === undefined)
       ? "–"

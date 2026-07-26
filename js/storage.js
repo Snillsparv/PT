@@ -113,6 +113,12 @@ function idagStr() {
   return datumStr(new Date());
 }
 
+function igarStr() {
+  var d = new Date();
+  d.setDate(d.getDate() - 1);
+  return datumStr(d);
+}
+
 function datumStr(d) {
   var y = d.getFullYear();
   var m = String(d.getMonth() + 1).padStart(2, "0");

@@ -1,40 +1,55 @@
 /* =========================================================
    style.css — Min PT
-   Mörkt neontema. Mobil först.
-   Neonfärgerna är accenter – text ligger alltid i ljusa
-   texttoner med god kontrast mot de mörka ytorna.
+   Manga-tema (seinen). Mobil först.
+   Formspråket lånar från tryckta mangasidor: tuschramar,
+   hårda tryckskuggor, rastertoner, regnstreck och pratbubblor.
+   En enda varm accentfärg (bränd orange) mot blåsvart natt.
+   Text ligger alltid i ljusa toner med god kontrast.
    ========================================================= */
 
-:root {
-  --plan: #070810;             /* sidbakgrund */
-  --yta: #12142a;              /* kort/paneler */
-  --yta-upphojd: #191c36;
-  --text: #eef1ff;
-  --text-sekundar: #a9b1d6;
-  --text-dampad: #8189ad;
-  --grid: #232748;
-  --baslinje: #343a63;
-  --kant: rgba(140, 160, 255, 0.16);
+/* Rubriktypsnitt i mangalogo-stil, självhostat så att sidan
+   fungerar utan nätverk (subset: latin, täcker å ä ö). */
+@font-face {
+  font-family: "Anton";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/anton-latin.woff2") format("woff2");
+}
 
-  --neon: #22d3ee;             /* huvudaccent, cyan */
-  --neon-2: #a78bfa;           /* sekundär accent, violett */
-  --neon-3: #f472b6;           /* tertiär accent, rosa */
-  --accent: var(--neon);
-  --accent-text: #67e8f9;      /* cyan som klarar text på mörk yta */
-  --accent-yta: rgba(34, 211, 238, 0.10);
-  --serie-1: #0aa2c0; /* diagramserie: cyan i rätt ljushetsband för mörk yta */
+:root {
+  --plan: #0a1018;             /* sidbakgrund: regnig natt */
+  --yta: #101823;              /* kort/paneler */
+  --yta-upphojd: #16202e;
+  --text: #e9eef5;
+  --text-sekundar: #a4b2c3;
+  --text-dampad: #8494a8;
+  --grid: #223042;
+  --baslinje: #35465c;
+  --kant: rgba(233, 238, 245, 0.20);
+  --ram: rgba(223, 230, 238, 0.85);   /* panelram i "tusch" */
+  --tusch: #0b0d10;                   /* nästan svart bläck */
+  --papper: #f4f1e8;                  /* pratbubblor/paneler i papper */
+  --papper-text: #171c24;
+
+  --accent: #f97316;           /* bränd orange – enda accenten */
+  --accent-mork: #c2410c;
+  --accent-text: #fdba74;      /* orange som klarar text på mörk yta */
+  --accent-yta: rgba(249, 115, 22, 0.12);
+  --serie-1: #c97728; /* diagramserie: orange i rätt ljushetsband för mörk yta (validerad: OKLCH L 0,48–0,67, kontrast ≥3:1) */
 
   --status-ok: #4ade80;
   --status-ok-text: #6ee7a0;
   --status-ok-yta: rgba(74, 222, 128, 0.10);
-  --status-info-yta: rgba(140, 160, 255, 0.08);
+  --status-info-yta: rgba(164, 178, 195, 0.08);
   --status-varning-text: #fcd34d;
   --status-varning-yta: rgba(251, 191, 36, 0.10);
   --status-stopp-text: #fda4af;
   --status-stopp-yta: rgba(251, 113, 133, 0.12);
 
-  --glod: 0 0 18px rgba(34, 211, 238, 0.28);
-  --skugga: 0 10px 30px rgba(0, 0, 0, 0.45);
+  --display: "Anton", "Arial Narrow", system-ui, sans-serif;
+  --glod: 3px 3px 0 rgba(0, 0, 0, 0.85);   /* "glöd" är numera hård trycksskugga */
+  --skugga: 6px 6px 0 rgba(0, 0, 0, 0.55);
   color-scheme: dark;
 }
 
@@ -48,78 +63,86 @@ html, body {
 body {
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
   background:
-    radial-gradient(1100px 520px at 85% -10%, rgba(167, 139, 250, 0.16), transparent 60%),
-    radial-gradient(900px 480px at -15% 25%, rgba(34, 211, 238, 0.10), transparent 60%),
-    radial-gradient(700px 420px at 110% 80%, rgba(244, 114, 182, 0.07), transparent 60%),
+    /* två lager tunna regnstreck i olika vinkel */
+    repeating-linear-gradient(103deg,
+      transparent 0 26px, rgba(233, 238, 245, 0.035) 26px 27px, transparent 27px 52px),
+    repeating-linear-gradient(99deg,
+      transparent 0 41px, rgba(233, 238, 245, 0.022) 41px 42px, transparent 42px 87px),
+    /* svag månljuston uppe till höger */
+    radial-gradient(900px 480px at 80% -10%, rgba(164, 190, 220, 0.10), transparent 60%),
     var(--plan);
   background-attachment: fixed;
   color: var(--text);
   line-height: 1.55;
-  padding-bottom: 76px; /* plats för bottenmenyn på mobil */
+  /* plats för bottenmenyn på mobil + iPhones hemindikator i appläge */
+  padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px));
 }
 
 /* ---------- Sidhuvud ---------- */
 header.sidhuvud {
-  background: rgba(10, 11, 22, 0.75);
+  background: rgba(8, 12, 18, 0.82);
   backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--kant);
-  padding: 16px 16px 12px;
+  border-bottom: 2px solid var(--ram);
+  /* i appläge ligger sidhuvudet under statusfältet – lämna plats för det */
+  padding: calc(16px + env(safe-area-inset-top, 0px))
+           calc(16px + env(safe-area-inset-right, 0px))
+           12px
+           calc(16px + env(safe-area-inset-left, 0px));
   position: relative;
 }
 
 header.sidhuvud::after {
   content: "";
   position: absolute;
-  left: 0; right: 0; bottom: -1px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--neon), var(--neon-2), var(--neon-3), transparent);
-  opacity: 0.7;
+  left: 0; right: 0; bottom: -6px;
+  height: 3px;
+  background: var(--tusch);
+  opacity: 0.9;
 }
 
 header.sidhuvud h1 {
   margin: 0;
-  font-size: 1.45rem;
-  letter-spacing: 0.04em;
-  background: linear-gradient(90deg, #67e8f9, #a78bfa 55%, #f472b6);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: 0 0 24px rgba(34, 211, 238, 0.25);
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 1.6rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text);
+  text-shadow: 3px 3px 0 var(--tusch);
   width: fit-content;
 }
 
 header.sidhuvud p {
-  margin: 2px 0 0;
+  margin: 4px 0 0;
   font-size: 0.85rem;
   color: var(--text-sekundar);
 }
 
 .h1-emblem {
-  height: 30px;
-  width: 30px;
-  vertical-align: -6px;
+  height: 32px;
+  width: 32px;
+  vertical-align: -7px;
   margin-right: 8px;
-  filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.5));
+  filter: drop-shadow(2px 2px 0 rgba(0, 0, 0, 0.8));
 }
 
 .lage-badge {
   display: inline-block;
-  vertical-align: 3px;
+  vertical-align: 5px;
   margin-left: 10px;
-  padding: 2px 10px;
-  font-size: 0.62rem;
+  padding: 3px 10px;
+  font-family: system-ui, sans-serif;
+  font-size: 0.6rem;
   font-weight: 800;
   font-style: italic;
   letter-spacing: 0.12em;
-  color: #ffe08a;
-  background: rgba(251, 191, 36, 0.10);
-  border: 1px solid rgba(251, 191, 36, 0.45);
-  border-radius: 999px;
+  color: var(--papper-text);
+  background: var(--papper);
+  border: 2px solid var(--tusch);
+  border-radius: 3px;
   transform: skew(-8deg);
-  text-shadow: 0 0 10px rgba(251, 191, 36, 0.6);
-  -webkit-background-clip: border-box;
-  background-clip: border-box;
-  -webkit-text-fill-color: #ffe08a;
+  box-shadow: 2px 2px 0 var(--tusch);
+  text-shadow: none;
 }
 
 /* ---------- Navigering ---------- */
@@ -129,19 +152,24 @@ nav.flikar {
   left: 0;
   right: 0;
   display: flex;
-  background: rgba(9, 10, 20, 0.92);
+  background: rgba(7, 11, 17, 0.94);
   backdrop-filter: blur(10px);
-  border-top: 1px solid var(--kant);
+  border-top: 2px solid var(--ram);
   z-index: 20;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 nav.flikar button {
   flex: 1;
-  padding: 9px 2px 10px;
+  padding: 8px 2px 10px;
   background: none;
   border: none;
-  font: inherit;
-  font-size: 0.68rem;
+  border-top: 3px solid transparent;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: var(--text-sekundar);
   cursor: pointer;
   display: flex;
@@ -150,19 +178,28 @@ nav.flikar button {
   gap: 2px;
 }
 
-nav.flikar button .ikon { font-size: 1.15rem; line-height: 1; }
+nav.flikar button .ikon {
+  font-size: 1.15rem;
+  line-height: 1;
+  filter: grayscale(1) contrast(1.1);
+  opacity: 0.8;
+}
 
 nav.flikar button.aktiv {
   color: var(--accent-text);
-  font-weight: 600;
-  text-shadow: 0 0 12px rgba(34, 211, 238, 0.55);
+  border-top-color: var(--accent);
+}
+
+nav.flikar button.aktiv .ikon {
+  filter: none;
+  opacity: 1;
 }
 
 /* 7 flikar ska rymmas på smala mobiler: kortnamn + något större text */
 .flik-namn-kort { display: none; }
 
 @media (max-width: 460px) {
-  nav.flikar button { font-size: 0.66rem; padding: 8px 1px 9px; }
+  nav.flikar button { font-size: 0.64rem; padding: 7px 1px 9px; }
   nav.flikar button .ikon { font-size: 1.05rem; }
   nav.flikar button.har-kort .flik-namn-lang { display: none; }
   nav.flikar button.har-kort .flik-namn-kort { display: inline; }
@@ -173,47 +210,76 @@ nav.flikar button.aktiv {
   nav.flikar {
     position: static;
     border-top: none;
-    border-bottom: 1px solid var(--kant);
+    border-bottom: 2px solid var(--ram);
     justify-content: center;
+    flex-wrap: wrap;
     gap: 4px;
+    padding: 10px 8px;
   }
+  /* menyn sitter inte längre mot skärmkanten – ingen hemindikator att undvika */
+  nav.flikar { padding-bottom: 10px; }
   nav.flikar button {
     flex: 0 0 auto;
     flex-direction: row;
-    gap: 7px;
-    font-size: 0.9rem;
-    padding: 12px 16px;
-    border-bottom: 2px solid transparent;
+    gap: 6px;
+    font-size: 0.82rem;
+    padding: 8px 12px;
+    border: 2px solid transparent;
+    border-radius: 3px;
+    transform: skew(-8deg);
   }
   nav.flikar button.aktiv {
-    border-bottom-color: var(--neon);
-    box-shadow: 0 10px 18px -14px rgba(34, 211, 238, 0.9);
+    background: var(--accent);
+    color: var(--tusch);
+    border-color: var(--tusch);
+    box-shadow: 3px 3px 0 var(--tusch);
   }
+  nav.flikar button.aktiv .ikon { filter: grayscale(1) brightness(0.2); }
 }
 
 /* ---------- Layout ---------- */
 main {
   max-width: 860px;
   margin: 0 auto;
-  padding: 16px;
+  padding: 18px 16px;
 }
 
 section.vy { display: none; }
 section.vy.aktiv { display: block; }
 
+/* Varje kort är en mangapanel: tuschram, skarpa hörn, hård tryckskugga
+   och en svag rasterton av prickar i ytan. */
 .kort {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0) 40%), var(--yta);
-  border: 1px solid var(--kant);
-  border-radius: 14px;
+  background:
+    radial-gradient(rgba(233, 238, 245, 0.022) 1px, transparent 1.4px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0) 40%),
+    var(--yta);
+  background-size: 7px 7px, auto, auto;
+  border: 2px solid var(--ram);
+  border-radius: 2px;
   padding: 16px;
-  margin-bottom: 14px;
+  margin-bottom: 18px;
   box-shadow: var(--skugga);
 }
 
 .kort h2 {
-  margin: 0 0 8px;
-  font-size: 1.05rem;
-  letter-spacing: 0.015em;
+  margin: 0 0 10px;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 1.15rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* orange tusch-snedstreck under panelrubriker */
+.kort h2::after {
+  content: "";
+  display: block;
+  width: 46px;
+  height: 4px;
+  margin-top: 5px;
+  background: var(--accent);
+  transform: skewX(-30deg);
 }
 
 .kort h3 {
@@ -226,58 +292,89 @@ section.vy.aktiv { display: block; }
 .dampad { color: var(--text-sekundar); font-size: 0.9rem; }
 .liten { font-size: 0.82rem; color: var(--text-dampad); }
 
-/* ---------- Meddelanden (feedback) ---------- */
+/* ---------- Meddelanden (feedback) = pratbubblor ---------- */
 .medd {
-  border-radius: 10px;
-  padding: 10px 12px;
-  margin: 8px 0;
+  position: relative;
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin: 10px 0 20px;
   font-size: 0.92rem;
-  border: 1px solid transparent;
+  background: var(--papper);
+  color: var(--papper-text);
+  border: 2px solid var(--tusch);
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.55);
+}
+
+/* bubblans svans: svart kontur + pappersfyllning */
+.medd::before {
+  content: "";
+  position: absolute;
+  bottom: -14px;
+  left: 24px;
+  border-style: solid;
+  border-width: 14px 4px 0 16px;
+  border-color: var(--tusch) transparent transparent transparent;
+}
+
+.medd::after {
+  content: "";
+  position: absolute;
+  bottom: -9px;
+  left: 27px;
+  border-style: solid;
+  border-width: 10px 3px 0 11px;
+  border-color: var(--papper) transparent transparent transparent;
 }
 
 .medd .varfor {
   display: block;
   margin-top: 4px;
   font-size: 0.8rem;
-  color: var(--text-sekundar);
+  color: #4a5261;
 }
 
-.medd-ok      { background: var(--status-ok-yta);      border-color: rgba(74, 222, 128, 0.25); }
-.medd-info    { background: var(--status-info-yta);    border-color: rgba(140, 160, 255, 0.20); }
-.medd-varning { background: var(--status-varning-yta); border-color: rgba(251, 191, 36, 0.25); }
-.medd-stopp   { background: var(--status-stopp-yta);   border-color: rgba(251, 113, 133, 0.30); }
+.medd-ok, .medd-info, .medd-varning, .medd-stopp { background: var(--papper); }
 
-.medd-ok      .medd-etikett { color: var(--status-ok-text); font-weight: 600; }
-.medd-info    .medd-etikett { color: var(--text-sekundar); font-weight: 600; }
-.medd-varning .medd-etikett { color: var(--status-varning-text); font-weight: 600; }
-.medd-stopp   .medd-etikett { color: var(--status-stopp-text); font-weight: 600; }
+.medd-stopp { border-width: 3px; }
+
+.medd-ok      .medd-etikett { color: #15803d; font-weight: 800; }
+.medd-info    .medd-etikett { color: #3b4a63; font-weight: 800; }
+.medd-varning .medd-etikett { color: #9a5b00; font-weight: 800; }
+.medd-stopp   .medd-etikett { color: #b91c1c; font-weight: 800; }
 
 /* ---------- Knappar & formulär ---------- */
 button.primar, button.sekundar, button.fara {
   font: inherit;
-  border-radius: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.88rem;
+  border-radius: 3px;
   padding: 10px 16px;
   cursor: pointer;
-  border: 1px solid transparent;
+  border: 2px solid var(--tusch);
 }
 
 button.primar {
-  background: linear-gradient(135deg, #22d3ee, #818cf8);
-  color: #05060d;
-  font-weight: 700;
+  background: var(--accent);
+  color: var(--tusch);
   box-shadow: var(--glod);
 }
 
+button.primar:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.85); }
+
 button.sekundar {
-  background: rgba(34, 211, 238, 0.06);
-  border-color: rgba(103, 232, 249, 0.35);
-  color: var(--accent-text);
+  background: transparent;
+  border-color: rgba(233, 238, 245, 0.65);
+  color: var(--text);
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.45);
 }
 
 button.fara {
-  background: rgba(251, 113, 133, 0.06);
-  border-color: rgba(251, 113, 133, 0.35);
+  background: transparent;
+  border-color: rgba(251, 113, 133, 0.55);
   color: var(--status-stopp-text);
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.45);
 }
 
 button.mini {
@@ -285,7 +382,7 @@ button.mini {
   font-size: 0.8rem;
   padding: 8px 14px;
   min-height: 40px;
-  border-radius: 8px;
+  border-radius: 3px;
   border: 1px solid var(--kant);
   background: rgba(255, 255, 255, 0.03);
   color: var(--text);
@@ -293,9 +390,8 @@ button.mini {
 }
 
 button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, summary:focus-visible {
-  outline: 2px solid var(--neon);
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
-  box-shadow: 0 0 12px rgba(34, 211, 238, 0.45);
 }
 
 label { display: block; font-size: 0.85rem; color: var(--text-sekundar); margin: 10px 0 3px; }
@@ -305,14 +401,14 @@ input[type="number"], input[type="date"], input[type="text"], select, textarea {
   width: 100%;
   padding: 9px 10px;
   border: 1px solid var(--baslinje);
-  border-radius: 8px;
+  border-radius: 3px;
   background: var(--yta-upphojd);
   color: var(--text);
 }
 
 textarea { resize: vertical; min-height: 56px; }
 
-input[type="range"] { width: 100%; accent-color: var(--neon); }
+input[type="range"] { width: 100%; accent-color: var(--accent); }
 
 .falt-rad {
   display: grid;
@@ -334,7 +430,7 @@ button.chip {
   font: inherit;
   font-size: 0.82rem;
   padding: 7px 13px;
-  border-radius: 999px;
+  border-radius: 3px;
   border: 1px solid var(--kant);
   background: rgba(255, 255, 255, 0.03);
   color: var(--text-sekundar);
@@ -344,12 +440,14 @@ button.chip {
   gap: 6px;
 }
 
+/* vald chip = inverterad i "tryck": papper med tuschkant */
 button.chip[aria-pressed="true"] {
-  background: linear-gradient(135deg, rgba(34, 211, 238, 0.22), rgba(129, 140, 248, 0.22));
-  border-color: rgba(103, 232, 249, 0.55);
-  color: var(--accent-text);
-  font-weight: 600;
-  box-shadow: 0 0 14px rgba(34, 211, 238, 0.25);
+  background: var(--papper);
+  border: 2px solid var(--tusch);
+  padding: 6px 12px;
+  color: var(--papper-text);
+  font-weight: 700;
+  box-shadow: 2px 2px 0 var(--tusch);
 }
 
 /* ---------- Regionmärkning ---------- */
@@ -361,8 +459,8 @@ button.chip[aria-pressed="true"] {
   gap: 9px;
   margin: 20px 0 6px;
   padding: 8px 12px;
-  border-left: 3px solid var(--neon); /* färg sätts per region inline */
-  border-radius: 8px;
+  border-left: 4px solid var(--accent); /* färg sätts per region inline */
+  border-radius: 2px;
   background: rgba(255, 255, 255, 0.03);
 }
 
@@ -381,7 +479,7 @@ button.chip[aria-pressed="true"] {
   min-width: 52px;
   text-align: center;
   font-weight: 600;
-  border-radius: 8px;
+  border-radius: 3px;
   padding: 4px 6px;
   border: 1px solid transparent;
 }
@@ -392,8 +490,8 @@ button.chip[aria-pressed="true"] {
 /* ---------- Övningskort ---------- */
 .ovning-kort {
   border: 1px solid var(--kant);
-  border-left-width: 3px;   /* vänsterkantens färg sätts per region inline */
-  border-radius: 10px;
+  border-left-width: 4px;   /* vänsterkantens färg sätts per region inline */
+  border-radius: 2px;
   padding: 12px 14px;
   margin: 10px 0;
   background: rgba(255, 255, 255, 0.02);
@@ -415,7 +513,7 @@ button.chip[aria-pressed="true"] {
   font-weight: 500;
   border: 1px solid var(--kant);
   color: var(--text-sekundar);
-  border-radius: 20px;
+  border-radius: 3px;
   padding: 1px 9px;
   white-space: nowrap;
   display: inline-flex;
@@ -476,7 +574,7 @@ details.passlista-rad[open] summary .namn { color: var(--accent-text); }
 /* ---------- Historik ---------- */
 .pass-historik {
   border: 1px solid var(--kant);
-  border-radius: 10px;
+  border-radius: 2px;
   padding: 10px 14px;
   margin: 10px 0;
   background: rgba(255, 255, 255, 0.02);
@@ -496,35 +594,56 @@ details.passlista-rad[open] summary .namn { color: var(--accent-text); }
 .diagram-grid { stroke: var(--grid); stroke-width: 1; }
 .diagram-baslinje { stroke: var(--baslinje); stroke-width: 1; }
 .diagram-tick { fill: var(--text-sekundar); font-size: 10px; font-variant-numeric: tabular-nums; }
-.diagram-stapel { fill: var(--serie-1); filter: drop-shadow(0 0 6px rgba(34, 211, 238, 0.35)); }
+.diagram-stapel { fill: var(--serie-1); }
 .diagram-linje {
   fill: none;
   stroke: var(--serie-1);
   stroke-width: 2;
   stroke-linejoin: round;
   stroke-linecap: round;
-  filter: drop-shadow(0 0 6px rgba(34, 211, 238, 0.45));
 }
 .diagram-punkt { fill: var(--serie-1); stroke: var(--yta); stroke-width: 2; }
+
+/* Prognosdelen: samma färg men streckad linje och ofyllda punkter –
+   skillnaden bärs av formen, inte av färgen. */
+.diagram-linje.prognos { stroke-dasharray: 6 5; opacity: 0.85; }
+.diagram-punkt.prognos { fill: var(--yta); stroke: var(--serie-1); }
+
+.diagram-legend {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin: 2px 0 4px;
+  font-size: 0.78rem;
+  color: var(--text-sekundar);
+}
+.diagram-legend .legend-post { display: inline-flex; align-items: center; gap: 7px; }
+.legend-linje {
+  display: inline-block;
+  width: 24px;
+  height: 0;
+  border-top: 3px solid var(--serie-1);
+}
+.legend-linje.prognos { border-top-style: dashed; }
 
 .diagram-tomt { color: var(--text-sekundar); font-size: 0.9rem; padding: 18px 0; }
 
 .diagram-tooltip {
   position: absolute;
   transform: translate(-50%, -100%);
-  background: var(--yta-upphojd);
-  color: var(--text);
-  border: 1px solid rgba(103, 232, 249, 0.4);
-  border-radius: 8px;
+  background: var(--papper);
+  color: var(--papper-text);
+  border: 2px solid var(--tusch);
+  border-radius: 3px;
   padding: 6px 10px;
   font-size: 0.78rem;
   pointer-events: none;
   white-space: nowrap;
   z-index: 5;
-  box-shadow: 0 0 14px rgba(34, 211, 238, 0.2);
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.6);
 }
 
-.diagram-tooltip-rubrik { font-weight: 600; color: var(--accent-text); }
+.diagram-tooltip-rubrik { font-weight: 800; color: var(--accent-mork); }
 
 table.diagram-tabell {
   border-collapse: collapse;
@@ -554,31 +673,32 @@ table.diagram-tabell td:last-child, table.diagram-tabell th:last-child {
 
 .statruta {
   border: 1px solid var(--kant);
-  border-radius: 10px;
+  border-radius: 2px;
   padding: 10px 12px;
   background: rgba(255, 255, 255, 0.02);
 }
 
 .statruta .etikett { font-size: 0.78rem; color: var(--text-sekundar); }
 .statruta .varde {
-  font-size: 1.35rem;
-  font-weight: 600;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 1.5rem;
+  letter-spacing: 0.02em;
   color: var(--accent-text);
-  text-shadow: 0 0 14px rgba(34, 211, 238, 0.35);
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.7);
 }
 
 /* ---------- Fas-kort ---------- */
-.fas-kort { border-left: 3px solid var(--grid); padding-left: 12px; }
+.fas-kort { border-left: 4px solid var(--grid); padding-left: 12px; }
 .fas-kort.aktiv-fas {
-  border-left-color: var(--neon);
-  box-shadow: var(--skugga), -6px 0 18px -10px rgba(34, 211, 238, 0.7);
+  border-left-color: var(--accent);
 }
 
 .gangsteg { display: flex; gap: 6px; flex-wrap: wrap; margin: 10px 0; }
 .gangsteg button {
   width: 40px; height: 40px;
   display: inline-flex; align-items: center; justify-content: center;
-  border-radius: 50%;
+  border-radius: 3px;
   border: 1px solid var(--kant);
   background: rgba(255, 255, 255, 0.03);
   font: inherit;
@@ -589,14 +709,14 @@ table.diagram-tabell td:last-child, table.diagram-tabell th:last-child {
 .gangsteg button.klar {
   background: var(--accent-yta);
   color: var(--accent-text);
-  border-color: rgba(103, 232, 249, 0.35);
+  border-color: rgba(249, 115, 22, 0.45);
 }
 .gangsteg button.nu {
-  background: linear-gradient(135deg, #22d3ee, #818cf8);
-  color: #05060d;
-  border-color: transparent;
-  font-weight: 700;
-  box-shadow: var(--glod);
+  background: var(--accent);
+  color: var(--tusch);
+  border: 2px solid var(--tusch);
+  font-weight: 800;
+  box-shadow: 2px 2px 0 var(--tusch);
 }
 
 /* ---------- Morgonkoll ---------- */
@@ -618,50 +738,52 @@ table.diagram-tabell td:last-child, table.diagram-tabell th:last-child {
 details.expander { margin: 8px 0; }
 details.expander summary { cursor: pointer; color: var(--accent-text); font-size: 0.9rem; }
 
-/* ---------- Superpappa (anime/hjälte-stil) ---------- */
+/* ---------- Superpappa (mangapanel-stil) ---------- */
 .hero-superpappa {
   position: relative;
   overflow: hidden;
   text-align: left;
   background:
-    /* manga-fartränder från nedre mitten */
-    repeating-conic-gradient(from -90deg at 50% 130%,
-      rgba(255, 255, 255, 0.045) 0deg 3deg, transparent 3deg 11deg),
-    /* skärmton-prickar i hörnet */
-    radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1.5px),
-    linear-gradient(160deg, rgba(167, 139, 250, 0.14), rgba(34, 211, 238, 0.06) 45%, transparent 70%),
+    /* fartränder i tusch från nedre mitten */
+    repeating-conic-gradient(from -90deg at 50% 135%,
+      rgba(233, 238, 245, 0.05) 0deg 2deg, transparent 2deg 10deg),
+    /* rasterton av prickar */
+    radial-gradient(rgba(233, 238, 245, 0.04) 1px, transparent 1.5px),
     var(--yta);
-  background-size: auto, 9px 9px, auto, auto;
-  border-color: rgba(251, 191, 36, 0.35);
+  background-size: auto, 8px 8px, auto;
 }
 
+/* hjältebilden ramas in som en tryckt panel: tuschkant + pappersvit ytterlinje */
 .hero-bild {
   display: block;
   width: 100%;
   height: auto;
-  border-radius: 12px;
-  border: 1px solid rgba(167, 139, 250, 0.35);
-  margin-bottom: 14px;
-  box-shadow: 0 0 24px -6px rgba(167, 139, 250, 0.45);
+  border-radius: 2px;
+  border: 2px solid var(--tusch);
+  outline: 2px solid var(--ram);
+  outline-offset: 2px;
+  margin: 2px 0 18px;
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.6);
 }
 
 .hero-katakana {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 26px;
+  right: 26px;
   writing-mode: vertical-rl;
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   font-weight: 700;
-  letter-spacing: 0.35em;
-  color: rgba(244, 114, 182, 0.35);
-  text-shadow: 0 0 12px rgba(244, 114, 182, 0.35);
+  letter-spacing: 0.3em;
+  padding: 12px 5px;
+  color: var(--text);
+  background: rgba(8, 12, 18, 0.78);
+  border: 1px solid var(--ram);
   pointer-events: none;
 }
 
 .hero-gnistra {
   position: absolute;
-  color: #ffe08a;
-  text-shadow: 0 0 10px rgba(251, 191, 36, 0.8);
+  color: rgba(233, 238, 245, 0.85);
   pointer-events: none;
   font-size: 0.9rem;
 }
@@ -669,30 +791,64 @@ details.expander summary { cursor: pointer; color: var(--accent-text); font-size
 .hero-gnistra.g2 { top: 58px; left: 68%; }
 .hero-gnistra.g3 { bottom: 10px; left: 10px; opacity: 0.8; }
 
-.hero-till {
-  margin: 0 0 2px;
+/* hälsningen är en liten pratbubbla från panelen ovanför */
+p.hero-till {
+  position: relative;
+  display: inline-block;
+  margin: 0 0 10px;
+  padding: 6px 14px;
   font-size: 0.95rem;
-  color: var(--text-sekundar);
+  font-weight: 600;
+  background: var(--papper);
+  color: var(--papper-text);
+  border: 2px solid var(--tusch);
+  border-radius: 12px;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.55);
 }
 
-.hero-titel {
+p.hero-till::before {
+  content: "";
+  position: absolute;
+  top: -12px;
+  left: 22px;
+  border-style: solid;
+  border-width: 0 4px 12px 14px;
+  border-color: transparent transparent var(--tusch) transparent;
+}
+
+p.hero-till::after {
+  content: "";
+  position: absolute;
+  top: -7px;
+  left: 25px;
+  border-style: solid;
+  border-width: 0 3px 8px 10px;
+  border-color: transparent transparent var(--papper) transparent;
+}
+
+/* titeln sätts som en mangalogotyp: vit med tuschkontur och orange tryckskugga.
+   h2-prefixet behövs för att slå .kort h2 i specificitet. */
+h2.hero-titel {
   margin: 0;
-  font-size: clamp(2rem, 9vw, 3rem);
-  font-weight: 900;
-  font-style: italic;
-  letter-spacing: 0.05em;
-  line-height: 1.1;
-  transform: skew(-6deg);
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(2.2rem, 10vw, 3.4rem);
+  letter-spacing: 0.06em;
+  line-height: 1.08;
+  transform: skew(-4deg);
   width: fit-content;
-  background: linear-gradient(100deg, #ffe08a 5%, #fb923c 35%, #f472b6 65%, #67e8f9 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  filter: drop-shadow(2px 3px 0 rgba(0, 0, 0, 0.55)) drop-shadow(0 0 18px rgba(244, 114, 182, 0.35));
+  color: var(--text);
+  -webkit-text-stroke: 1.5px var(--tusch);
+  text-shadow:
+    4px 4px 0 var(--accent-mork),
+    6px 6px 0 rgba(0, 0, 0, 0.85);
 }
 
-.hero-undertitel {
-  margin: 0 0 14px;
+/* logotypen ska inte ha panelrubrikernas orange understreck */
+h2.hero-titel::after { display: none; }
+
+p.hero-undertitel {
+  margin: 2px 0 14px;
   font-style: italic;
   letter-spacing: 0.3em;
   font-size: 0.8rem;
@@ -700,11 +856,11 @@ details.expander summary { cursor: pointer; color: var(--accent-text); font-size
 }
 
 .hero-niva {
-  border: 1px solid var(--kant);
-  border-radius: 12px;
+  border: 2px solid rgba(233, 238, 245, 0.35);
+  border-radius: 2px;
   padding: 12px 14px;
   margin: 10px 0 14px;
-  background: rgba(7, 8, 16, 0.55);
+  background: rgba(6, 9, 14, 0.6);
 }
 
 .hero-niva-rad {
@@ -723,27 +879,27 @@ details.expander summary { cursor: pointer; color: var(--accent-text); font-size
 }
 
 .hero-niva-varde {
+  font-family: var(--display);
+  font-weight: 400;
   font-size: 1.7rem;
-  font-weight: 800;
-  font-style: italic;
   color: var(--accent-text);
-  text-shadow: 0 0 16px rgba(34, 211, 238, 0.55);
+  text-shadow: 2px 2px 0 var(--tusch);
 }
 
-/* Kraftmätare: fyllningen bär färgen, spåret är ett ljusare steg av samma ramp */
+/* Kraftmätare: energibar i tryckstil – sneda ränder, tuschkant, inga glöd */
 .power-meter {
-  height: 10px;
-  border-radius: 999px;
-  background: rgba(34, 211, 238, 0.14);
+  height: 13px;
+  border-radius: 2px;
+  border: 2px solid rgba(233, 238, 245, 0.5);
+  background: rgba(0, 0, 0, 0.5);
   overflow: hidden;
   margin: 6px 0;
 }
 
 .power-meter-fyllning {
   height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #0aa2c0, #818cf8, #f472b6);
-  box-shadow: 0 0 12px rgba(34, 211, 238, 0.55);
+  background: repeating-linear-gradient(135deg,
+    var(--accent) 0 9px, var(--accent-mork) 9px 18px);
   transition: width 0.6s ease;
 }
 
@@ -752,7 +908,7 @@ details.expander summary { cursor: pointer; color: var(--accent-text); font-size
   gap: 12px;
   align-items: flex-start;
   border: 1px solid var(--kant);
-  border-radius: 12px;
+  border-radius: 2px;
   padding: 12px 14px;
   margin: 10px 0;
   background: rgba(255, 255, 255, 0.02);
@@ -783,7 +939,7 @@ details.expander summary { cursor: pointer; color: var(--accent-text); font-size
   font-weight: 700;
   letter-spacing: 0.08em;
   padding: 2px 9px;
-  border-radius: 999px;
+  border-radius: 3px;
   border: 1px solid var(--kant);
   white-space: nowrap;
 }
@@ -791,25 +947,25 @@ details.expander summary { cursor: pointer; color: var(--accent-text); font-size
 .kraft-beskrivning { margin: 4px 0 6px; font-size: 0.92rem; color: var(--text-sekundar); }
 
 .kraft-upplast {
-  border-color: rgba(251, 191, 36, 0.55);
-  background: rgba(251, 191, 36, 0.06);
-  box-shadow: 0 0 18px -6px rgba(251, 191, 36, 0.5);
+  border: 2px solid rgba(249, 115, 22, 0.75);
+  background: var(--accent-yta);
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.5);
 }
-.kraft-upplast .kraft-status { color: #ffe08a; border-color: rgba(251, 191, 36, 0.5); }
-.kraft-upplast .kraft-namn { color: #ffe08a; text-shadow: 0 0 12px rgba(251, 191, 36, 0.45); }
+.kraft-upplast .kraft-status { color: var(--accent-text); border-color: rgba(249, 115, 22, 0.6); }
+.kraft-upplast .kraft-namn { color: var(--accent-text); }
 
-.kraft-pagar { border-color: rgba(103, 232, 249, 0.45); }
-.kraft-pagar .kraft-status { color: var(--accent-text); border-color: rgba(103, 232, 249, 0.5); }
+.kraft-pagar { border-color: rgba(233, 238, 245, 0.45); }
+.kraft-pagar .kraft-status { color: var(--text); border-color: rgba(233, 238, 245, 0.5); }
 
 /* Låsta kort dimmas via färgval som fortfarande klarar AA-kontrast –
    inte via opacity på hela kortet (det sänkte småtexten under 4,5:1) */
-.kraft-last { border-color: rgba(140, 160, 255, 0.09); background: rgba(255, 255, 255, 0.012); }
-.kraft-last .kraft-ikon { opacity: 0.55; }
+.kraft-last { border-color: rgba(164, 178, 195, 0.10); background: rgba(255, 255, 255, 0.012); }
+.kraft-last .kraft-ikon { opacity: 0.55; filter: grayscale(1); }
 .kraft-last .kraft-namn { color: var(--text-sekundar); }
 .kraft-last .kraft-status { color: var(--text-sekundar); }
 
 .kraft-bonus { border-style: dashed; }
-.kraft-bonus .kraft-status { color: #f0abfc; border-color: rgba(232, 121, 249, 0.45); }
+.kraft-bonus .kraft-status { color: var(--text-sekundar); border-color: rgba(164, 178, 195, 0.45); }
 
 /* ---------- Utility ---------- */
 .gomd { display: none !important; }

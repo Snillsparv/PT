@@ -356,10 +356,12 @@ function dagensMorgonkoll(data) {
   return data.morgonkoll.find(function (k) { return k.datum === idag; }) || null;
 }
 
-function dagensPass(data) {
-  var idag = idagStr();
+/* datum är valfritt (default idag) – används för att fylla i gårdagens
+   planerade pass när man loggar i efterhand. */
+function dagensPass(data, datum) {
+  var dagStr = datum || idagStr();
   var fas = FASER[Math.min(data.installningar.fas, FASER.length) - 1];
-  var dagIndex = veckodagsIndex(idag);
+  var dagIndex = veckodagsIndex(dagStr);
   var dag = fas.vecka[dagIndex];
 
   var resultat = {
@@ -369,7 +371,8 @@ function dagensPass(data) {
     justeringar: []
   };
 
-  var koll = dagensMorgonkoll(data);
+  /* morgonkollen gäller bara dagens datum – för andra dagar planeras utan justeringar */
+  var koll = dagStr === idagStr() ? dagensMorgonkoll(data) : null;
   var ommaRegioner = {};
   if (koll) {
     Object.keys(koll.regioner || {}).forEach(function (r) {
