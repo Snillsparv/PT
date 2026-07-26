@@ -2,12 +2,21 @@
 <html lang="sv">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#0a1018">
+  <meta name="description" content="Träningsdagbok med program, gångprogram och feedback – byggd för en kropp som behöver snälla doser.">
   <title>Min PT – Superpappa i träning</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" type="image/png" href="img/emblem.png">
+
+  <!-- Installerbar app (hemskärm + offline) -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Min PT">
 </head>
 <body>
   <header class="sidhuvud">
@@ -35,5 +44,18 @@
   <script src="js/feedback.js"></script>
   <script src="js/charts.js"></script>
   <script src="js/app.js"></script>
+
+  <script>
+    /* Service worker: gör appen installerbar och användbar offline.
+       Kräver https (eller localhost) – misslyckas den fungerar sidan
+       precis som förut, bara utan offlineläge. */
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register("sw.js").catch(function (e) {
+          console.warn("Service worker kunde inte registreras:", e);
+        });
+      });
+    }
+  </script>
 </body>
 </html>

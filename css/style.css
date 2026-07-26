@@ -74,7 +74,8 @@ body {
   background-attachment: fixed;
   color: var(--text);
   line-height: 1.55;
-  padding-bottom: 76px; /* plats för bottenmenyn på mobil */
+  /* plats för bottenmenyn på mobil + iPhones hemindikator i appläge */
+  padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px));
 }
 
 /* ---------- Sidhuvud ---------- */
@@ -82,7 +83,11 @@ header.sidhuvud {
   background: rgba(8, 12, 18, 0.82);
   backdrop-filter: blur(8px);
   border-bottom: 2px solid var(--ram);
-  padding: 16px 16px 12px;
+  /* i appläge ligger sidhuvudet under statusfältet – lämna plats för det */
+  padding: calc(16px + env(safe-area-inset-top, 0px))
+           calc(16px + env(safe-area-inset-right, 0px))
+           12px
+           calc(16px + env(safe-area-inset-left, 0px));
   position: relative;
 }
 
@@ -151,6 +156,7 @@ nav.flikar {
   backdrop-filter: blur(10px);
   border-top: 2px solid var(--ram);
   z-index: 20;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 nav.flikar button {
@@ -210,6 +216,8 @@ nav.flikar button.aktiv .ikon {
     gap: 4px;
     padding: 10px 8px;
   }
+  /* menyn sitter inte längre mot skärmkanten – ingen hemindikator att undvika */
+  nav.flikar { padding-bottom: 10px; }
   nav.flikar button {
     flex: 0 0 auto;
     flex-direction: row;
