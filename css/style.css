@@ -523,14 +523,72 @@ button.chip[aria-pressed="true"] {
 
 .tagg-niva { background: var(--accent-yta); color: var(--accent-text); border-color: transparent; }
 
+/* Märkning av teknikkänsliga övningar */
+.tagg-teknik {
+  background: var(--status-varning-yta);
+  color: var(--status-varning-text);
+  border-color: rgba(251, 191, 36, 0.45);
+  font-weight: 600;
+}
+
+.teknik-flagga {
+  color: var(--status-varning-text);
+  font-size: 0.85rem;
+  margin-left: 2px;
+}
+
+/* Steg-för-steg-rutan: en egen panel så att den inte drunknar i löptexten */
+.teknik {
+  border: 2px solid rgba(251, 191, 36, 0.40);
+  border-left-width: 4px;
+  border-radius: 2px;
+  background: var(--status-varning-yta);
+  padding: 10px 14px 12px;
+  margin: 10px 0 12px;
+}
+
+.teknik-rubrik {
+  margin: 0 0 6px;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--status-varning-text);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+ol.teknik-steg {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 0.9rem;
+  list-style: decimal; /* uttryckligen: list-style ärvs och nollställs av passlistan */
+}
+
+ol.teknik-steg li {
+  display: list-item;
+  border-bottom: none;
+  margin: 5px 0;
+  padding-left: 2px;
+}
+
+ol.teknik-steg li::marker {
+  color: var(--status-varning-text);
+  font-weight: 700;
+}
+
 /* ---------- Dagens pass-lista ---------- */
+/* Bara direkta barn – annars ärver nästlade listor (teknikstegen)
+   både list-style: none och radernas underkant. */
 ul.passlista { list-style: none; margin: 8px 0; padding: 0; }
-ul.passlista li {
+ul.passlista > li {
   border-bottom: 1px solid var(--grid);
   display: block;
 }
-ul.passlista li:last-child { border-bottom: none; }
-ul.passlista li .namn { flex: 1; display: inline-flex; align-items: baseline; gap: 8px; }
+ul.passlista > li:last-child { border-bottom: none; }
+ul.passlista > li .namn { flex: 1; display: inline-flex; align-items: baseline; gap: 8px; }
 ul.passlista .dos { color: var(--text-sekundar); font-size: 0.85rem; white-space: nowrap; }
 
 /* Utfällbar övningsrad: tryck för hela beskrivningen */

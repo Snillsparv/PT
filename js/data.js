@@ -156,6 +156,13 @@ const OVNINGAR = [
     darfor: "Isometrisk träning bygger styrka runt knät utan rörelse – det snällaste sättet " +
       "att belasta ett lättirriterat löparknä och har ofta smärtdämpande effekt.",
     seUpp: "Gå inte djupare än att det känns tryggt. Smärta framtill i knät över 2/10 = res dig.",
+    teknik: [
+      "Ryggen platt mot väggen, fötterna en fotlängd ut från väggen och höftbrett isär.",
+      "Glid ner till bara 30–45° i knät – grundare än du tror. Låren ska inte i närheten av vågrätt.",
+      "Knäskålen rakt över foten. Låt inte knäna falla inåt mot varandra.",
+      "Vikten jämnt på båda fötterna, hela foten i golvet.",
+      "Vanligaste felet: för djupt läge. Trycket mot knäskålen växer brant med vinkeln – därför är grunt hela poängen."
+    ],
     next: "spansk-knaboj"
   },
   {
@@ -169,6 +176,13 @@ const OVNINGAR = [
       "att bygga knästyrka när knäna är känsliga för rörelse.",
     seUpp: "Kräver ett rejält band. Börja grunt och med korta hålltider – smärta framtill i " +
       "knät över 2/10 betyder mindre djup nästa håll.",
+    teknik: [
+      "Fäst bandet i något som säkert håller (dörrkarm med dörren låst, tung möbel) i knähöjd. Ryck till i det innan du lutar dig mot det.",
+      "Bandet ligger i knävecken – inte över knäskålen och inte nere på vaden.",
+      "Luta överkroppen bakåt mot bandets drag och böj knäna. Skenbenen står kvar lodrätt.",
+      "Överkropp och lår i rak linje, spänn sätet. Skjut inte fram höften.",
+      "Vanligaste felet: klent band eller dåligt fäste. Släpper det faller du bakåt – testa alltid fästet först."
+    ],
     next: "bensats-stol"
   },
   {
@@ -242,6 +256,14 @@ const OVNINGAR = [
     darfor: "Begränsat, förutsägbart djup gör den mycket snällare mot knäna än fria knäböj, " +
       "och händerna belastas inte alls.",
     seUpp: "Högre sits = lättare. Börja högt.",
+    teknik: [
+      "Stå med hälarna en bit framför en stabil stol eller säng, fötterna höftbrett.",
+      "Sänk dig långsamt på tre sekunder, med höften bakåt först.",
+      "Knäskålen rakt över andra tån hela vägen ner.",
+      "Nudda sitsen lätt – sätt dig inte tungt.",
+      "Res dig genom hälarna.",
+      "Faller knäna inåt eller går det inte långsamt: höj sitsen med en kudde. Högre sits = lättare."
+    ],
     next: "stepup"
   },
   {
@@ -252,6 +274,13 @@ const OVNINGAR = [
     dos: { set: 2, reps: 8 },
     darfor: "Bygger den gångstyrka du behöver i vardagen, med höjden som exakt dosratt.",
     seUpp: "Knät ska peka över foten, inte falla inåt. Öka höjden före antalet.",
+    teknik: [
+      "Använd ett stadigt, lågt steg – börja på 10–15 cm.",
+      "Hela foten på steget, tyngden mitt över foten.",
+      "Res dig genom det främre benets häl. Putta INTE ifrån med bakre foten – det är hela poängen med övningen.",
+      "Knäet rakt över foten, låt det inte vika inåt.",
+      "Ner långsamt och kontrollerat. Nedfasen är halva övningen."
+    ],
     next: "benpress"
   },
   {
@@ -262,6 +291,14 @@ const OVNINGAR = [
     darfor: "Ger mätbar, finjusterbar belastning utan balanskrav och utan greppbelastning – " +
       "det tryggaste gymalternativet för dina knän.",
     seUpp: "Börja löjligt lätt (t.ex. 20–30 kg) och öka max 5 % per vecka.",
+    teknik: [
+      "Ställ in ryggstödet så att höften inte rullar upp från stödet i botten.",
+      "Fötterna höftbrett, hela foten mot plattan.",
+      "Stanna vid ca 90° i knät – gå inte djupare även om maskinen tillåter det.",
+      "Lås aldrig ut knäna hårt i toppen. Stanna strax före rakt läge.",
+      "Tre sekunder ner, en sekund upp.",
+      "Vanligaste felet: djupt läge plus tung vikt. Det är precis den kombinationen som gjorde knäna sura från början."
+    ],
     next: null
   },
   {
@@ -274,6 +311,14 @@ const OVNINGAR = [
       "eftersom den belastar greppet.",
     seUpp: "Håll vikterna lätta för händernas skull – hellre långsammare tempo än tyngre " +
       "hantlar. Vid minsta känning i fingrarna: byt till höftlyft.",
+    teknik: [
+      "Stå med lätta hantlar framför låren, fötterna höftbrett, knäna lätt böjda – och lika böjda hela vägen.",
+      "Fäll från HÖFTEN, inte från ryggen: skjut rumpan bakåt, som att stänga en bildörr med baken.",
+      "Ryggen rak hela vägen. Tänk lång från hjässa till svanskota.",
+      "Gå bara så långt ner att det stramar i baksida lår. Det är stoppet – inte golvet.",
+      "Res dig genom att skjuta fram höften och spänna sätet.",
+      "Vanligaste felet: rundad rygg med vikt i händerna. Det är det klassiska sättet att sätta ryggen – stanna hellre högt."
+    ],
     next: null
   },
 
@@ -308,6 +353,13 @@ const OVNINGAR = [
     darfor: "Den mest beprövade träningen för hälsenor och hälsporre – långsam senbelastning " +
       "är det som får senvävnad att bli tåligare.",
     seUpp: "Stanna på plant golv tills det är helt lugnt. 24-timmarsregeln gäller extra här.",
+    teknik: [
+      "Upp på tå med BÅDA fötterna.",
+      "Flytta över vikten till benet du ska träna.",
+      "Sänk dig långsamt, räkna till tre, hela vägen ner till sträckt häl.",
+      "Upp med båda fötterna igen – aldrig upp på ett ben i den här versionen.",
+      "Vanligaste felet: att gå upp på ett ben också. Det dubblar dosen mot hälsenan utan att du märker det."
+    ],
     next: "tahavning-enben"
   },
   {
@@ -318,6 +370,13 @@ const OVNINGAR = [
     darfor: "Slutmålet för vadstyrkan – klarar du den här smärtfritt tål underbenen " +
       "betydligt längre promenader.",
     seUpp: "Byt tillbaka till två ben samma sekund som formen sviktar.",
+    teknik: [
+      "Fingertoppsstöd mot vägg för balansen – häng inte i händerna.",
+      "Upp på tå så högt du kommer, långsamt.",
+      "Håll fotleden rak. Låt inte foten rulla utåt över lilltåkanten.",
+      "Ner ännu långsammare, hela vägen ner.",
+      "Full längd i rörelsen är viktigare än många repetitioner."
+    ],
     next: null
   },
   {
@@ -387,6 +446,13 @@ const OVNINGAR = [
     darfor: "Grundövningen för rotatorcuffen. Bandet är snällt mot både axel och grepp – " +
       "du kan trä bandet runt handleden om fingrarna säger ifrån.",
     seUpp: "Lätt band, höga repetitioner. Ingen smärta i själva axelleden.",
+    teknik: [
+      "Armbågen intill kroppen, böjd i 90°. Lägg en hoprullad handduk mellan armbåge och revben – den ska ligga kvar hela setet.",
+      "Rotera bara underarmen utåt, som att öppna en dörr.",
+      "Överkroppen står stilla. Vrid inte bålen för att komma längre.",
+      "Axeln nere från örat.",
+      "Känns det i själva axelleden är bandet för tungt. Lätt band, lugna repetitioner."
+    ],
     next: null
   },
   {
@@ -442,6 +508,13 @@ const OVNINGAR = [
       "cuff och grepp.",
     seUpp: "Vikten begränsas av dina händer, inte din rygg – håll den lätt och öka i " +
       "repetitioner i stället.",
+    teknik: [
+      "Stöd ena handen och samma sidas knä mot en bänk. Ryggen vågrät och rak.",
+      "Nacken i linje med ryggen – titta i golvet, inte framåt.",
+      "Dra armbågen bakåt mot höften, tätt intill kroppen.",
+      "Skulderbladet först, armen sedan.",
+      "Vikten begränsas av dina händer, inte av din rygg. Håll den lätt."
+    ],
     next: null
   },
   {
@@ -454,6 +527,13 @@ const OVNINGAR = [
       "strikt press över huvudet.",
     seUpp: "Först i fas 3, och bara om utåtrotation och rodd varit gröna i flera veckor. " +
       "Smärta i främre axeln = avbryt.",
+    teknik: [
+      "Ryggstödet i svag lutning, ca 30–45°. Sitt inte rakt upp och pressa aldrig rakt över huvudet.",
+      "Armbågarna ca 45° från kroppen – inte rakt ut åt sidorna.",
+      "Pressa upp och något inåt. Stanna strax före raka armar.",
+      "Sänk långsamt och stanna när armbågarna är i höjd med bålen, inte djupare.",
+      "Vid minsta stick framtill i axeln: avbryt setet."
+    ],
     next: null
   },
 
@@ -468,6 +548,13 @@ const OVNINGAR = [
       "fingrarnas tolerans utan att väcka ledbesvären.",
     seUpp: "Aldrig till smärta. Kör inte samma dag som händerna redan känts av (bilkörning, " +
       "mycket tangentbord).",
+    teknik: [
+      "Använd en mjuk boll – inte en hård gummiring.",
+      "Krama lugnt till ungefär halv styrka. Aldrig max.",
+      "Håll tre sekunder och släpp HELT mellan varje.",
+      "Handleden rak under hela övningen.",
+      "Aldrig till smärta, och inte samma dag som händerna redan känts av av annat."
+    ],
     next: "grepphall-iso"
   },
   {
@@ -489,6 +576,15 @@ const OVNINGAR = [
     darfor: "Stilla håll är den mildaste formen av greppbelastning – förberedelse för att " +
       "bära kassar och hålla i redskap utan bakslag.",
     seUpp: "Börja mycket lätt (1–2 kg). Öka tiden före vikten.",
+    teknik: [
+      "Stå upprätt med armarna hängande rakt ner längs sidorna, en vikt i handen.",
+      "Handleden rak: underarm och handrygg i en linje. Låt inte vikten knäcka handleden nedåt.",
+      "Greppa lagom hårt – bara så mycket att vikten sitter säkert. Det här är ett håll, inte en kläm.",
+      "Axlarna nere från öronen, andas normalt genom hela hållet.",
+      "Håll armarna nere. Lyfter du dem framåt eller ut åt sidan blir det en axelövning i stället.",
+      "Öka tiden (15 → 20 → 30 sek) innan du ökar vikten.",
+      "Stickningar i hand eller underarm: sitt i stället med underarmen på låret och handen utanför knät – samma greppbelastning utan drag på axel och nerv."
+    ],
     next: null
   },
   {
@@ -500,6 +596,13 @@ const OVNINGAR = [
     darfor: "Excentrisk träning är förstahandsvalet vid tennisarmbågsbesvär – men i din " +
       "minsta möjliga dos, och bara när armbågen är lugn.",
     seUpp: "Kör inte under pågående skov. 24-timmarsregeln gäller strikt.",
+    teknik: [
+      "Underarmen stadigt på ett bord, handflatan nedåt, handen utanför kanten.",
+      "Lyft upp handen med ANDRA handens hjälp. Den tränande handleden lyfter inte själv.",
+      "Släpp taget och sänk långsamt på tre sekunder, hela vägen ner.",
+      "Bara nedfasen är övningen. Mycket lätt vikt – 0,5–1 kg räcker långt.",
+      "Kör inte under pågående skov, och 24-timmarsregeln gäller strikt: värre nästa dag = tillbaka ett steg."
+    ],
     next: null
   },
 
@@ -524,6 +627,13 @@ const OVNINGAR = [
     darfor: "Rygg- och bålkontroll med låg intensitet.",
     seUpp: "Handleden belastas i vinkel – vik ett handduksstöd under handloven eller stå på " +
       "knogarna om handlederna känns. Hoppa över vid pågående handledsbesvär.",
+    teknik: [
+      "Stå på alla fyra, händerna rakt under axlarna och knäna under höfterna.",
+      "Gör handleden ont: stå på knytnävarna eller lägg en vikt handduk under handloven.",
+      "Spänn magen lätt och håll ryggen rak. Svanka inte när du sträcker ut.",
+      "Sträck ut motsatt arm och ben till en rak linje – inte högre än ryggens nivå.",
+      "Håll bäckenet stilla. Tänk dig ett vattenglas på ländryggen som inte får spillas."
+    ],
     next: null
   },
   {
@@ -567,6 +677,13 @@ const OVNINGAR = [
       "starkt, snabbt knip kan dessutom dämpa plötsliga trängningar när de kommer.",
     seUpp: "Slappna av helt mellan knipen – avslappningen är halva övningen. Håll andningen " +
       "igång.",
+    teknik: [
+      "Sitt eller ligg bekvämt. Knip som när du håller emot kissnödighet: dra ihop och lyft inåt och uppåt.",
+      "Spänn inte rumpa, lår eller mage. Lägg en hand på magen och känn att den förblir mjuk.",
+      "Andas normalt genom hela knipet. Håller du andan gör du fel.",
+      "Slappna av HELT mellan varje, minst lika länge som du knep. Avslappningen är halva övningen.",
+      "Mer är inte bättre: en ständigt spänd bäckenbotten kan ge samma trängningar som en svag."
+    ],
     next: null
   },
 
@@ -591,6 +708,12 @@ const OVNINGAR = [
     darfor: "Öppnar upp höftens framsida efter sittande dagar – hjälper både gångsteg och " +
       "hållning.",
     seUpp: "Kudde under knät. Mjukt, aldrig till smärta.",
+    teknik: [
+      "Utfallsställning med bakre knät i golvet, kudde under knät.",
+      "Tippa bäckenet BAKÅT först – som att dra blygdbenet mot naveln. Det här är hela övningen.",
+      "Skjut sedan höften långsamt framåt tills det stramar framtill i bakre benets höft och lår.",
+      "Svanka inte. Svankar du känns stretchen i ländryggen i stället för i höftböjaren, och då gör den ingen nytta."
+    ],
     next: null
   },
   {
@@ -615,6 +738,13 @@ const OVNINGAR = [
     darfor: "Din bästa konditionsform: ingen stöt mot benhinnor eller hälar, minimal " +
       "knäbelastning och lätt vila för händerna (vila dem ovanpå styret).",
     seUpp: "Motståndet är dosratten – håll det lågt länge. Öka tid före motstånd.",
+    teknik: [
+      "Sadelhöjden först: i nedersta pedalläget ska knät vara nästan rakt, med bara en lätt böj. För låg sadel är den vanligaste orsaken till knäbesvär av cykling.",
+      "Foten rakt fram på pedalen. Låt inte hälen svänga in eller ut – då vrider knät i varje varv.",
+      "Lågt motstånd och bekväm kadens. Motståndet är dosratten.",
+      "Öka tiden före motståndet.",
+      "Känning på utsidan eller framsidan av knät: avbryt och kontrollera sadelhöjden innan nästa pass."
+    ],
     next: null
   },
   {
@@ -636,6 +766,12 @@ const OVNINGAR = [
     dos: { min: 20 },
     darfor: "Vattnet bär kroppsvikten – helkroppskondition med nästan noll ledbelastning.",
     seUpp: "Bröstsim med kraftiga bentag kan reta knän – välj andra simsätt om det känns.",
+    teknik: [
+      "Simma helst ryggsim, eller crawl med bara benspark och platta.",
+      "Undvik bröstsim: grodsparken vrider knäna utåt under belastning och är det sämsta valet för dina knän.",
+      "Ömma axlar: hoppa över crawlarmtagen och ta bensim i stället.",
+      "Vattengympa: håll rörelserna långsamma. Vattnet ger motståndet, farten behövs inte."
+    ],
     next: null
   },
   {
@@ -647,6 +783,14 @@ const OVNINGAR = [
     darfor: "Bra helkroppskondition när du kommit längre – men greppet gör att den ligger " +
       "sist i progressionen.",
     seUpp: "Först i fas 3. Korta pass. Vid minsta känning i fingrar/armbågar: byt till cykel.",
+    teknik: [
+      "Först i fas 3.",
+      "Sekvensen är ben – bål – armar på vägen ut, och armar – bål – ben på vägen in.",
+      "Dra med benen, inte med armarna. Armarna är sista tredjedelen av draget.",
+      "Avslappnat grepp, nästan som krokar. Kläm inte hårt om handtaget.",
+      "Ryggen rak, luta inte bakåt mer än ett snäpp förbi lodrätt.",
+      "Vid minsta känning i fingrar eller armbågar: byt till cykel."
+    ],
     next: null
   }
 ];
