@@ -68,9 +68,26 @@ function regionTagg(regionId) {
 }
 
 /* ---------- Övningsinfo (delad av biblioteket och passlistorna) ---------- */
+
+/* Steg-för-steg-rutan visas bara för övningar där fel teknik kan ge bakslag
+   (o.teknik finns) – de självklara övningarna hålls korta. */
+function teknikRuta(o) {
+  if (!o.teknik || !o.teknik.length) return null;
+  var lista = el("ol", { class: "teknik-steg" });
+  o.teknik.forEach(function (steg) { lista.appendChild(el("li", { text: steg })); });
+  return el("div", { class: "teknik" }, [
+    el("h4", { class: "teknik-rubrik" }, [
+      el("span", { "aria-hidden": "true", text: "⚠" }),
+      "Teknik – lätt att göra fel"
+    ]),
+    lista
+  ]);
+}
+
 function ovningsInfo(o) {
   return [
     el("p", null, [el("strong", { text: "Så gör du: " }), o.beskrivning]),
+    teknikRuta(o),
     el("p", null, [el("strong", { text: "Startdos: " }), dosText(o) + (o.utrustning ? " · Utrustning: " + o.utrustning : "")]),
     el("p", null, [el("strong", { text: "Därför är den bra för dig: " }), o.darfor]),
     el("p", null, [el("strong", { text: "Se upp med: " }), o.seUpp])
@@ -83,7 +100,13 @@ function passlistaRad(o, dosStr) {
   return el("li", null, [
     el("details", { class: "passlista-rad" }, [
       el("summary", null, [
-        el("span", { class: "namn" }, [regionIkon(o.region), o.namn]),
+        el("span", { class: "namn" }, [
+          regionIkon(o.region),
+          o.namn,
+          o.teknik && o.teknik.length
+            ? el("span", { class: "teknik-flagga", text: "⚠", title: "Teknikkänslig – läs stegen innan du kör" })
+            : null
+        ]),
         el("span", { class: "dos", text: dosStr }),
         el("span", { class: "chevron", "aria-hidden": "true", text: "▾" })
       ]),
@@ -705,7 +728,12 @@ function ovningsKort(o) {
       o.namn + " ",
       regionTagg(o.region),
       el("span", { class: "tagg", text: TYP_NAMN[o.typ] }),
-      el("span", { class: "tagg tagg-niva", text: "Nivå " + o.niva })
+      el("span", { class: "tagg tagg-niva", text: "Nivå " + o.niva }),
+      o.teknik && o.teknik.length
+        ? el("span", { class: "tagg tagg-teknik" }, [
+            el("span", { "aria-hidden": "true", text: "⚠" }), "Teknik"
+          ])
+        : null
     ])
   ].concat(ovningsInfo(o)));
   if (o.next) {
