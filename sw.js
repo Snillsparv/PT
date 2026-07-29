@@ -9,7 +9,7 @@
 
 "use strict";
 
-var CACHE_VERSION = "v3";
+var CACHE_VERSION = "v4";
 var CACHE_NAMN = "min-pt-" + CACHE_VERSION;
 
 /* Relativa vägar så att appen fungerar både i roten och under
